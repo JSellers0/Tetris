@@ -1,0 +1,19 @@
+Level parameters
+	* drop speed
+	* Background images
+
+Flash any line clear
+Special flash for 4 line clear
+
+Rotate Right
+
+Main Menu, Pause, and Game Over Screens
+	* SFML Rectangle Shape transparency
+	* Menu/Screen Layouts
+	* Menu Event Handling
+
+Consolidate
+	
+Git this shit
+
+Piece previews
