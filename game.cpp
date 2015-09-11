@@ -11,9 +11,9 @@ Game::Game()
 	this->window.create(sf::VideoMode(800,600), "Tetris via SFML");
 	this->window.setFramerateLimit(60);
 	this->initializeBackgrounds();
-	setVector();
-	setOrder();
-	
+	setVectors();
+	setOrder('n');
+	setOrder('c');
 	this->drop_decrement = .5;
 	this->drop_rate = CLOCKS_PER_SEC * .35;
 }
@@ -47,6 +47,18 @@ void Game::draw(Board* board, Piece* piece)
 	}
 	//draw the rectangle that hides the hidden rows
 	this->window.draw(this->hidden_rows);
+	
+	this->window.display();
+}
+
+void Game::drawPreview(Piece piece_one, Piece piece_two, Piece piece_three)
+{
+	this->window.draw(this->piece_preview);
+	for (int block=0; block<4; block++) {
+		this->window.draw(piece_one.getBlock(block));
+		this->window.draw(piece_two.getBlock(block));
+		this->window.draw(piece_three.getBlock(block));
+	}
 	
 	this->window.display();
 }
@@ -90,8 +102,8 @@ void Game::initializeBackgrounds()
 	this->right_panel.setSize(sf::Vector2f(200, BOARD_HEIGHT * BLOCK_SIZE));
 	
 	this->piece_preview.setFillColor(sf::Color::Black);
-	this->piece_preview.setPosition(sf::Vector2f(600,110));
-	this->piece_preview.setSize(sf::Vector2f(125, 400));
+	this->piece_preview.setPosition(sf::Vector2f(575,110));
+	this->piece_preview.setSize(sf::Vector2f(175, 400));
 	
 	this->level_panel.setFillColor(sf::Color::Green);
 	this->level_panel.setPosition(sf::Vector2f(X_OFFSET, 0));
@@ -245,20 +257,39 @@ void Game::dropPiece(Board* board, Piece* piece)
 	}
 }
 
-void Game::setVector()
+void Game::setVectors()
 {
 	for (int i=0; i<7; i++) {
-		this->piece_order.push_back(i);
+		this->current_order.push_back(i);
+	}
+	
+	for (int i=0; i<7; i++) {
+		this->next_order.push_back(i);
 	}
 }
 
-void Game::setOrder()
+void Game::setOrder(char order)
 {
-	std::srand(unsigned (std::time(0)));
-	std::random_shuffle (this->piece_order.begin(), this->piece_order.end());
+	switch(order)
+	{
+		case 'c':
+			for (int i=0; i<7; i++) {
+				this->current_order[i] = this->next_order[i];
+			}
+			break;
+			
+		case 'n':
+			std::srand(unsigned (std::time(0)));
+			std::random_shuffle (this->next_order.begin(), this->next_order.end());
+			break;
+	}
 }
 
-int Game::getPieceIndex(int index)
+int Game::getPieceIndex(int index, char vector)
 {
-	return this->piece_order[index];
+	if (vector == 'c') {
+		return this->current_order[index];
+	} else if (vector == 'n') {
+		return this->next_order[index];
+	}
 }

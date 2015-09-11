@@ -15,6 +15,7 @@ int main()
 	Piece *piece;
 	Piece preview_one;
 	Piece preview_two;
+	Piece preview_three;
 	Board pboard;
 	Board *board = &pboard;
 	Game game;
@@ -29,10 +30,14 @@ int main()
 	
 	int piece_index = 0;
 	
-	piece = &piece_list[game.getPieceIndex(piece_index)];
+	piece = &piece_list[game.getPieceIndex(piece_index, 'c')];
+	preview_one.setType(piece_list[game.getPieceIndex(piece_index + 1, 'c')].getType(), 1);
+	preview_two.setType(piece_list[game.getPieceIndex(piece_index + 2, 'c')].getType(), 2);
+	preview_three.setType(piece_list[game.getPieceIndex(piece_index + 3, 'c')].getType(), 3);
 	
 	game.window.clear(sf::Color(160, 160, 160));
 	game.drawPanels();
+	game.drawPreview(preview_one, preview_two, preview_three);
 	
 	clock_t start_time = clock();
 	clock_t current_time;
@@ -115,12 +120,47 @@ int main()
 				}
 				game.drawPanels();
 			}
+			
 			piece_index++;
-			if (piece_index == 7) {
-				game.setOrder();
-				piece_index = 0;
+						
+			switch(piece_index)
+			{
+				case 4:
+					preview_one.setType(piece_list[game.getPieceIndex(piece_index + 1, 'c')].getType(), 1);
+					preview_two.setType(piece_list[game.getPieceIndex(piece_index + 2, 'c')].getType(), 2);
+					preview_three.setType(piece_list[game.getPieceIndex(0, 'n')].getType(), 3);
+					break;
+					
+				case 5:
+					preview_one.setType(piece_list[game.getPieceIndex(piece_index + 1, 'c')].getType(), 1);
+					preview_two.setType(piece_list[game.getPieceIndex(0, 'n')].getType(), 2);
+					preview_three.setType(piece_list[game.getPieceIndex(1,'n')].getType(),3);
+					break;
+					
+				case 6:
+					preview_one.setType(piece_list[game.getPieceIndex(0, 'n')].getType(), 1);
+					preview_two.setType(piece_list[game.getPieceIndex(1, 'n')].getType(), 2);
+					preview_three.setType(piece_list[game.getPieceIndex(2,'n')].getType(),3);
+					break;
+				
+				case 7:
+					game.setOrder('c');
+					game.setOrder('n');
+					piece_index = 0;
+					preview_one.setType(piece_list[game.getPieceIndex(piece_index + 1, 'c')].getType(), 1);
+					preview_two.setType(piece_list[game.getPieceIndex(piece_index + 2, 'c')].getType(), 2);
+					preview_three.setType(piece_list[game.getPieceIndex(piece_index + 3,'c')].getType(),3);
+					break;
+					
+				default:
+					preview_one.setType(piece_list[game.getPieceIndex(piece_index + 1, 'c')].getType(), 1);
+					preview_two.setType(piece_list[game.getPieceIndex(piece_index + 2, 'c')].getType(), 2);
+					preview_three.setType(piece_list[game.getPieceIndex(piece_index + 3,'c')].getType(),3);
+					break;
 			}
-			piece = &piece_list[game.getPieceIndex(piece_index)];
+			
+			piece = &piece_list[game.getPieceIndex(piece_index, 'c')];
+			game.drawPreview(preview_one, preview_two, preview_three);
 			
 			bool lost = game.checkLose(board);
 			if (!lost) {

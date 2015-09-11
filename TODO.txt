@@ -1,3 +1,6 @@
+Bugs
+	* Left Panel glitch on refresh
+
 Level parameters
 	* drop speed
 	* Background images
@@ -15,5 +18,3 @@ Main Menu, Pause, and Game Over Screens
 Consolidate
 	
 Git this shit
-
-Piece previews

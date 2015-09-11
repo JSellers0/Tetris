@@ -2,14 +2,13 @@
 
 Text::Text()
 {
+	lr_increment = 5;
+	level = 20;
 	initializeFont();
 	initializeLeftPanel();
 	initializeRightPanel();
-	lr_increment = 5;
-	level = 1;
 	this->lines_remain = this->lr_increment * this->level + this->level;
 	this->lr_text.setString(this->formatString(this->lines_remain));
-	
 }
 
 void Text::initializeFont()
@@ -38,7 +37,7 @@ void Text::initializeLeftPanel()
 	this->lvl_text.setCharacterSize(lvl_size);
 	this->lvl_text.setColor(lp_color);
 	this->lvl_text.setPosition(sf::Vector2f(lp_x + 100, lp_y));
-	this->lvl_text.setString("1");
+	this->lvl_text.setString(this->toString(this->level));
 	
 	lp_y += (lvl_size + lp_gap);
 	

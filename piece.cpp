@@ -1,75 +1,257 @@
-#include "piece.hpp"
+#include "piece.hpp"	
 #include "dbg.h"
 
-void Piece::setType(char type)
+void Piece::setType(char type, int preview_number)
 {	
 	switch(type)
 	{
 		case 'Z':
-			block_1 = sf::Vector2f(convertBoardtoPixel(0, 3));
-			block_2 = sf::Vector2f(convertBoardtoPixel(0, 4));
-			block_3 = sf::Vector2f(convertBoardtoPixel(1, 4));
-			block_4 = sf::Vector2f(convertBoardtoPixel(1, 5));
+			switch(preview_number) 
+			{
+				case 0: //Regular Piece
+					block_1 = sf::Vector2f(convertBoardtoPixel(0, 3));
+					block_2 = sf::Vector2f(convertBoardtoPixel(0, 4));
+					block_3 = sf::Vector2f(convertBoardtoPixel(1, 4));
+					block_4 = sf::Vector2f(convertBoardtoPixel(1, 5));
+					break;
+									
+				case 1:  //Piece Preview #1
+					block_1 = sf::Vector2f(625,135);
+					block_2 = sf::Vector2f(650,135);
+					block_3 = sf::Vector2f(650,160);
+					block_4 = sf::Vector2f(675,160);
+					break;
+					
+				case 2:
+					block_1 = sf::Vector2f(625, 260);
+					block_2 = sf::Vector2f(650, 260);
+					block_3 = sf::Vector2f(650, 285);
+					block_4 = sf::Vector2f(675, 285);
+					break;
+					
+				case 3:
+					block_1 = sf::Vector2f(625, 385);
+					block_2 = sf::Vector2f(650, 385);
+					block_3 = sf::Vector2f(650, 410);
+					block_4 = sf::Vector2f(675, 410);
+					break;
+			}
 			
 			init(sf::Color(255,0,0), 'R', 4, 1, type);
 			setStructure(block_1, block_2, block_3, block_4);
 			break;
 		
 		case 'S':
-			block_1 = sf::Vector2f(convertBoardtoPixel(0, 4));
-			block_2 = sf::Vector2f(convertBoardtoPixel(0, 5));
-			block_3 = sf::Vector2f(convertBoardtoPixel(1, 3));
-			block_4 = sf::Vector2f(convertBoardtoPixel(1, 4));
+			switch(preview_number)
+			{
+				case 0:
+					block_1 = sf::Vector2f(convertBoardtoPixel(0, 4));
+					block_2 = sf::Vector2f(convertBoardtoPixel(0, 5));
+					block_3 = sf::Vector2f(convertBoardtoPixel(1, 3));
+					block_4 = sf::Vector2f(convertBoardtoPixel(1, 4));
+					break;
+				
+				case 1:
+					block_1 = sf::Vector2f(650, 135);
+					block_2 = sf::Vector2f(675, 135);
+					block_3 = sf::Vector2f(625, 160);
+					block_4 = sf::Vector2f(650, 160);
+					break;
+					
+				case 2:
+					block_1 = sf::Vector2f(650, 260);
+					block_2 = sf::Vector2f(675, 260);
+					block_3 = sf::Vector2f(625, 285);
+					block_4 = sf::Vector2f(650, 285);
+					break;
+				
+				case 3:
+					block_1 = sf::Vector2f(650, 385);
+					block_2 = sf::Vector2f(675, 385);
+					block_3 = sf::Vector2f(625, 410);
+					block_4 = sf::Vector2f(650, 410);
+					break;
+			}
 			
 			init(sf::Color(0,255,0), 'G', 4, 1, type);
 			setStructure(block_1, block_2, block_3, block_4);
 			break;
 			
 		case 'J':
-			block_1 = sf::Vector2f(convertBoardtoPixel(0, 3));
-			block_2 = sf::Vector2f(convertBoardtoPixel(1, 3));
-			block_3 = sf::Vector2f(convertBoardtoPixel(1, 4));
-			block_4 = sf::Vector2f(convertBoardtoPixel(1, 5));
+			switch(preview_number)
+			{
+				case 0:
+					block_1 = sf::Vector2f(convertBoardtoPixel(0, 3));
+					block_2 = sf::Vector2f(convertBoardtoPixel(1, 3));
+					block_3 = sf::Vector2f(convertBoardtoPixel(1, 4));
+					block_4 = sf::Vector2f(convertBoardtoPixel(1, 5));
+					break;
+					
+				case 1:
+					block_1 = sf::Vector2f(625, 135);
+					block_2 = sf::Vector2f(625, 160);
+					block_3 = sf::Vector2f(650, 160);
+					block_4 = sf::Vector2f(675, 160);
+					break;
+					
+				case 2:
+					block_1 = sf::Vector2f(625, 260);
+					block_2 = sf::Vector2f(625, 285);
+					block_3 = sf::Vector2f(650, 285);
+					block_4 = sf::Vector2f(675, 285);
+					break;
+					
+				case 3:
+					block_1 = sf::Vector2f(625, 385);
+					block_2 = sf::Vector2f(625, 410);
+					block_3 = sf::Vector2f(650, 410);
+					block_4 = sf::Vector2f(675, 410);
+					break;
+			}
 			
 			init(sf::Color(0,0,255), 'B', 4, 1, type);
 			setStructure(block_1, block_2, block_3, block_4);
 			break;
 			
 		case 'L':
-			block_1 = sf::Vector2f(convertBoardtoPixel(0, 5));
-			block_2 = sf::Vector2f(convertBoardtoPixel(1, 3));
-			block_3 = sf::Vector2f(convertBoardtoPixel(1, 4));
-			block_4 = sf::Vector2f(convertBoardtoPixel(1, 5));
+			switch(preview_number)
+			{
+				case 0:
+					block_1 = sf::Vector2f(convertBoardtoPixel(0, 5));
+					block_2 = sf::Vector2f(convertBoardtoPixel(1, 3));
+					block_3 = sf::Vector2f(convertBoardtoPixel(1, 4));
+					block_4 = sf::Vector2f(convertBoardtoPixel(1, 5));
+					break;
+					
+				case 1:
+					block_1 = sf::Vector2f(675, 135);
+					block_2 = sf::Vector2f(625, 160);
+					block_3 = sf::Vector2f(650, 160);
+					block_4 = sf::Vector2f(675, 160);
+					break;
+					
+				case 2:
+					block_1 = sf::Vector2f(675, 260);
+					block_2 = sf::Vector2f(625, 285);
+					block_3 = sf::Vector2f(650, 285);
+					block_4 = sf::Vector2f(675, 285);
+					break;
+					
+				case 3:
+					block_1 = sf::Vector2f(675, 385);
+					block_2 = sf::Vector2f(625, 410);
+					block_3 = sf::Vector2f(650, 410);
+					block_4 = sf::Vector2f(675, 410);
+					break;
+			}
 			
 			init(sf::Color(255,128,0), 'O', 4, 1, type);
 			setStructure(block_1, block_2, block_3, block_4);
 			break;
 			
 		case 'T':
-			block_1 = sf::Vector2f(convertBoardtoPixel(0, 4));
-			block_2 = sf::Vector2f(convertBoardtoPixel(1, 3));
-			block_3 = sf::Vector2f(convertBoardtoPixel(1, 4));
-			block_4 = sf::Vector2f(convertBoardtoPixel(1, 5));
+			switch(preview_number)
+			{
+				case 0:
+					block_1 = sf::Vector2f(convertBoardtoPixel(0, 4));
+					block_2 = sf::Vector2f(convertBoardtoPixel(1, 3));
+					block_3 = sf::Vector2f(convertBoardtoPixel(1, 4));
+					block_4 = sf::Vector2f(convertBoardtoPixel(1, 5));
+					break;
+				
+				case 1:
+					block_1 = sf::Vector2f(650, 135);
+					block_2 = sf::Vector2f(625, 160);
+					block_3 = sf::Vector2f(650, 160);
+					block_4 = sf::Vector2f(675, 160);
+					break;
+					
+				case 2:
+					block_1 = sf::Vector2f(650, 260);
+					block_2 = sf::Vector2f(625, 285);
+					block_3 = sf::Vector2f(650, 285);
+					block_4 = sf::Vector2f(675, 285);
+					break;
+					
+				case 3:
+					block_1 = sf::Vector2f(650, 385);
+					block_2 = sf::Vector2f(625, 410);
+					block_3 = sf::Vector2f(650, 410);
+					block_4 = sf::Vector2f(675, 410);
+					break;
+			}
 			
 			init(sf::Color(160,32,240), 'P', 4, 1, type);
 			setStructure(block_1, block_2, block_3, block_4);
 			break;
 			
 		case 'O':
-			block_1 = sf::Vector2f(convertBoardtoPixel(0, 4));
-			block_2 = sf::Vector2f(convertBoardtoPixel(0, 5));
-			block_3 = sf::Vector2f(convertBoardtoPixel(1, 4));
-			block_4 = sf::Vector2f(convertBoardtoPixel(1, 5));
+			switch(preview_number)
+			{
+				case 0:
+					block_1 = sf::Vector2f(convertBoardtoPixel(0, 4));
+					block_2 = sf::Vector2f(convertBoardtoPixel(0, 5));
+					block_3 = sf::Vector2f(convertBoardtoPixel(1, 4));
+					block_4 = sf::Vector2f(convertBoardtoPixel(1, 5));
+					break;
+					
+				case 1:
+					block_1 = sf::Vector2f(640, 135);
+					block_2 = sf::Vector2f(665, 135);
+					block_3 = sf::Vector2f(640, 160);
+					block_4 = sf::Vector2f(665, 160);
+					break;
+					
+				case 2:
+					block_1 = sf::Vector2f(640, 260);
+					block_2 = sf::Vector2f(665, 260);
+					block_3 = sf::Vector2f(640, 285);
+					block_4 = sf::Vector2f(665, 285);
+					break;
+					
+				case 3:
+					block_1 = sf::Vector2f(640, 385);
+					block_2 = sf::Vector2f(665, 385);
+					block_3 = sf::Vector2f(640, 410);
+					block_4 = sf::Vector2f(665, 410);
+					break;
+			}
 			
 			init(sf::Color(255,255,0), 'Y', 4, 1, type);
 			setStructure(block_1, block_2, block_3, block_4);
 			break;
 			
 		case 'I':
-			block_1 = sf::Vector2f(convertBoardtoPixel(1, 3));
-			block_2 = sf::Vector2f(convertBoardtoPixel(1, 4));
-			block_3 = sf::Vector2f(convertBoardtoPixel(1, 5));
-			block_4 = sf::Vector2f(convertBoardtoPixel(1, 6));
+			switch(preview_number)
+			{
+				case 0:
+					block_1 = sf::Vector2f(convertBoardtoPixel(1, 3));
+					block_2 = sf::Vector2f(convertBoardtoPixel(1, 4));
+					block_3 = sf::Vector2f(convertBoardtoPixel(1, 5));
+					block_4 = sf::Vector2f(convertBoardtoPixel(1, 6));
+					break;
+					
+				case 1:
+					block_1 = sf::Vector2f(612.5, 160);
+					block_2 = sf::Vector2f(637.5, 160);
+					block_3 = sf::Vector2f(662.5, 160);
+					block_4 = sf::Vector2f(687.5, 160);
+					break;
+					
+				case 2:
+					block_1 = sf::Vector2f(612.5, 285);
+					block_2 = sf::Vector2f(637.5, 285);
+					block_3 = sf::Vector2f(662.5, 285);
+					block_4 = sf::Vector2f(687.5, 285);
+					break;
+					
+				case 3:
+					block_1 = sf::Vector2f(612.5, 410);
+					block_2 = sf::Vector2f(637.5, 410);
+					block_3 = sf::Vector2f(662.5, 410);
+					block_4 = sf::Vector2f(687.5, 410);
+					break;
+			}
 			
 			init(sf::Color(0,255,255), 'C', 4, 1, type);
 			setStructure(block_1, block_2, block_3, block_4);
