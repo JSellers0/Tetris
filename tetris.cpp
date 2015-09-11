@@ -1,6 +1,11 @@
-/* 
+/** 
+ * tetris.cpp
  * Copyright 2015 Jeffrey L. Sellers
-*/
+ * 
+ * @author Jeffrey L. Sellers
+ * @version 0.9
+ * @copyright 2015
+ */
 
 /* This file is part of Jeff's C++ tetris clone.
 

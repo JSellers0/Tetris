@@ -124,10 +124,6 @@ void Game::initializeBackgrounds()
 	this->piece_preview.setFillColor(sf::Color::Black);
 	this->piece_preview.setPosition(sf::Vector2f(575,110));
 	this->piece_preview.setSize(sf::Vector2f(175, 400));
-	
-	this->level_panel.setFillColor(sf::Color::Green);
-	this->level_panel.setPosition(sf::Vector2f(X_OFFSET, 0));
-	this->level_panel.setSize(sf::Vector2f(300, 150));
 }
 
 bool Game::checkDown(Board* board, Piece* piece)

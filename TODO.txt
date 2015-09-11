@@ -36,5 +36,8 @@ Main Menu, Pause, and Game Over Screens
 	* Menu Event Handling
 
 Consolidate
+	* Move everything from tetris into game.run()
+	
+Documentation
 	
 Git this shit

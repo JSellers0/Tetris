@@ -1,4 +1,7 @@
-	#ifndef __dbg_h__
+//This program is taken as written from http://c.learncodethehardway.org/book/ex20.html
+// Author Zed did not give any information on licensing.
+
+#ifndef __dbg_h__
 #define __dbh_h__
 
 #include <stdio.h>
