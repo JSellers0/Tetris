@@ -1,10 +1,6 @@
 /** 
  * game.hpp
  * Copyright 2015 Jeffrey L. Sellers
- * 
- * @author Jeffrey L. Sellers
- * @version 0.9
- * @copyright 2015
  */
 
 /* This file is part of Jeff's C++ tetris clone.
@@ -22,6 +18,8 @@
  *  You should have received a copy of the GNU General Public License
  *  along with Jeff's C++ tetris clone.  If not, see <http://www.gnu.org/licenses/>.
  */ 
+ 
+//This file uses code from Copyright (c) 2014 Daniel Mansfield under the MIT License (MIT)
 
 #ifndef GAME_HPP
 #define GAME_HPP
@@ -29,11 +27,13 @@
 #include <vector>
 #include <SFML/Graphics.hpp>
 #include <ctime>
+#include <stack>
 
-#include "piece.hpp"
 #include "text.hpp"
+#include "piece.hpp"
+#include "board.hpp"
 
-class Board;
+class GameState;
 
 class Game
 {
@@ -51,7 +51,11 @@ class Game
 		/** Initializes the vectors current_order and next_order to contain
 		  * 7 integers from 0 to 6.
 		  */
+		  
+		void initializePieces();
 		void setVectors();
+		
+		void setPieceList();
 		
 	// Private Members
 	private:	
@@ -61,6 +65,7 @@ class Game
 		
 		int drop_rate;
 		int drop_decrement;
+		int piece_index;
 		
 		clock_t start_time;
 		clock_t current_time;
@@ -70,10 +75,19 @@ class Game
 		sf::RectangleShape right_panel;
 		sf::RectangleShape piece_preview;
 		sf::RectangleShape hidden_rows;
+		
+		Piece piece_list[7];
+		
+		Board board;
+		Piece piece;
+		Piece preview_one;
+		Piece preview_two;
+		Piece preview_thr;
 	
 	public:
 		// Public Constructors
 		Game();
+		~Game();
 		 
 		//Public Members
 		Text text;
@@ -90,6 +104,7 @@ class Game
 		  * @return true if there is space available below the piece otherwise false
 		  */ 
 		bool checkDown(Board* board, Piece* piece);
+		bool newCheckDown();
 		
 		/** Returns the availability of space to the left of the piece.  
 		  * Currently uses pointer parameters because of not having 
@@ -100,6 +115,7 @@ class Game
 		  * @return true if there is space available left of the piece otherwise false
 		  */
 		bool checkLeft(Board* board, Piece *piece);
+		bool newCheckLeft();
 		
 		/** Returns the availability of space to the right of the piece.  
 		  * Currently uses pointer parameters because of not having 
@@ -110,6 +126,7 @@ class Game
 		  * @return true if there is space available right of the piece otherwise false
 		  */
 		bool checkRight(Board* board, Piece *piece);
+		bool newCheckRight();
 		
 		/** Checks for edge overlap following piece rotation.
 		  * Currently uses pointer parameters because of not having 
@@ -120,6 +137,7 @@ class Game
 		  * @return 1 if the piece is overlapping the right edge
 		  */
 		int edgeCheck(Piece *piece);
+		int newEdgeCheck();
 		
 		/** Checks the top row for pieces after tetris.cpp gets a new piece.
 		  * This probably creates a bug wherein you can stack pieces all the
@@ -131,12 +149,11 @@ class Game
 		  */
 		bool checkLose(Board* board);
 		
-		
 		void draw(Board* board, Piece* piece);
 		void drawPreview(Piece piece_one, Piece piece_two, Piece piece_three);
 		void drawPanels();
 		void update(int);
-		void handleInput(Board* board, Piece* piece);
+		void handleInput(sf::Event event);
 		void gameloop(Board* board, Piece* piece);
 		void dropPiece(Board* board, Piece* piece);
 		
@@ -146,6 +163,15 @@ class Game
 		int getPieceIndex(int index, char vector);
 		
 		int getDropRate() {return drop_rate;}
+		
+		void run();
+		
+		std::stack<GameState*> states;
+		void pushState(GameState* state);
+		void popState();
+		void changeState(GameState* state);
+		GameState* peekState();
+		
 };
 #endif
 

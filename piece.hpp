@@ -32,7 +32,7 @@
 class Piece
 {
 	private:
-	
+		// Private Members
 		sf::RectangleShape structure[4];
 		int origin_col;
 		int origin_col_start;
@@ -41,13 +41,15 @@ class Piece
 		sf::Color color;
 		char color_code;
 		char type;
+		sf::Vector2f block_1, block_2, block_3, block_4;
 		
-		void init(sf::Color color, char color_code, int row, int col, char type);
+		// Private Methods
+		void init(sf::Color color, char color_code, int origin_col, int origin_row, char type);
 		void setStructure(sf::Vector2f, sf::Vector2f, sf::Vector2f, sf::Vector2f);
 		
-		sf::Vector2f block_1, block_2, block_3, block_4;
-	
 	public:
+		
+		//Public Methods
 		void setType(char type, int preview_number=0);
 		
 		int getBlockCol(int block);

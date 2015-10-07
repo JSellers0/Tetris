@@ -34,6 +34,8 @@ class Text {
 	public:
 		Text();
 		
+		sf::RenderWindow window;
+		
 		std::string toString(int convert);
 		sf::Font font;
 		void initializeFont();
