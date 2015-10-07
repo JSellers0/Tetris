@@ -16,26 +16,40 @@
 
     You should have received a copy of the GNU General Public License
     along with Jeff's C++ tetris clone.  If not, see <http://www.gnu.org/licenses/>.
-*/ 
+*/
+
+//This file uses code from Copyright (c) 2014 Daniel Mansfield under the MIT License (MIT)
 
 #include <algorithm>
 #include <cstdlib>
 #include <iostream>
+#include <SFML/System.hpp>
+
 
 #include "game.hpp"
+#include "gamestate.hpp"
 #include "board.hpp"
+#include "piece.hpp"
+#include "text.hpp"
 #include "dbg.h"
 
 Game::Game()
 {
 	this->window.create(sf::VideoMode(800,600), "Tetris via SFML");
 	this->window.setFramerateLimit(60);
-	this->initializeBackgrounds();
+	initializeBackgrounds();
+	setPieceList();
 	setVectors();
 	setOrder('n');
 	setOrder('c');
 	this->drop_decrement = .5;
 	this->drop_rate = CLOCKS_PER_SEC * .35;
+	
+}
+
+Game::~Game()
+{
+	while(!this->states.empty()) popState();
 }
 
 int Game::levelUp()
@@ -126,6 +140,22 @@ void Game::initializeBackgrounds()
 	this->piece_preview.setSize(sf::Vector2f(175, 400));
 }
 
+bool Game::newCheckDown()
+{
+	for (int block=0; block<4; block++) {
+		int row = this->piece.getBlockRow(block) + 1;
+		
+		if (row == BOARD_HEIGHT) {
+			this->board.setCanDrop(false);
+			return false;
+		} else if (this->board.getCell(row, this->piece.getBlockCol(block)) != 'n') {
+			this->board.setCanDrop(false);
+			return false;
+		}
+	}
+	return true;
+}
+
 bool Game::checkDown(Board* board, Piece* piece)
 {
 	for (int block=0; block<4; block++) {
@@ -156,6 +186,34 @@ bool Game::checkLeft(Board* board, Piece* piece)
 	return true;
 }
 
+bool Game::newCheckLeft()
+{
+	for (int block=0; block<4; block++) {
+		int col = this->piece.getBlockCol(block) - 1;
+		
+		if (col < 0) {
+			return false;
+		} else if (this->board.getCell(this->piece.getBlockRow(block),col) != 'n') {
+			return false;
+		}
+	}
+	return true;
+}
+
+bool Game::newCheckRight()
+{
+	for (int block=0; block<4; block++) {
+		int col = this->piece.getBlockCol(block) + 1;
+		
+		if (col == BOARD_WIDTH) {
+			return false;
+		} else if (this->board.getCell(this->piece.getBlockRow(block), col) != 'n') {
+			return false;
+		}
+	}
+	return true;
+}
+	
 bool Game::checkRight(Board* board, Piece* piece)
 {
 	for (int block=0; block<4; block++) {
@@ -182,6 +240,18 @@ int Game::edgeCheck(Piece* piece)
 	}
 }
 
+int Game::newEdgeCheck()
+{
+	for (int block=0; block<4; block++) {
+		int col = this->piece.getBlockCol(block);
+		if (col < 0) {
+			return -1;
+		} else if (col >= BOARD_WIDTH) {
+			return 1;
+		}
+	}
+}
+
 bool Game::checkLose(Board* board)
 {
 	int n_count = BOARD_WIDTH;
@@ -198,70 +268,64 @@ bool Game::checkLose(Board* board)
 	}
 }
 
-void Game::handleInput(Board* board, Piece* piece)
+void Game::handleInput(sf::Event event)
 {
-	sf::Event event;
-	
-	while (this->window.pollEvent(event)) {
-		switch(event.type)
+	switch(event.type)
+	{
+		case sf::Event::Closed:
+			this->text.window.close();
+			break;
+			
+		case sf::Event::KeyPressed:
 		{
-			case sf::Event::Closed:
-				this->window.close();
-				break;
-				
-			case sf::Event::KeyPressed:
-			{
-				if (event.key.code == sf::Keyboard::Escape) {
-					this->window.close();
-				} else if (event.key.code == sf::Keyboard::P) {
-					board->printBoard();
-				} else if (event.key.code == sf::Keyboard::Down) {
-					if (checkDown(board, piece)) {
-						piece->moveDown();
+			if (event.key.code == sf::Keyboard::Escape) {
+				this->text.window.close();
+			} else if (event.key.code == sf::Keyboard::P) {
+				this->board.printBoard();
+			} else if (event.key.code == sf::Keyboard::Down) {
+				if (newCheckDown()) {
+					this->piece.moveDown();
+				}
+			} else if (event.key.code == sf::Keyboard::Left) {
+				if (newCheckLeft()) {
+					this->piece.moveLeft();
+				}
+			} else if (event.key.code == sf::Keyboard::Right) {
+				if (newCheckRight()) {
+					this->piece.moveRight();
+				}
+			} else if (event.key.code == sf::Keyboard::Space) {
+				if (newCheckDown()) {
+					this->piece.rotateLeft();
+					int check = newEdgeCheck();
+					switch(check) {
+						case -1:
+							this->piece.moveRight();
+							break;
+						case 1:
+							this->piece.moveLeft();
+							break;
 					}
-				} else if (event.key.code == sf::Keyboard::Left) {
-					if (checkLeft(board, piece)) {
-						piece->moveLeft();
-					}
-				} else if (event.key.code == sf::Keyboard::Right) {
-					if (checkRight(board, piece)) {
-						piece->moveRight();
-					}
-				} else if (event.key.code == sf::Keyboard::Space) {
-					if (checkDown(board, piece)) {
-						piece->rotateLeft();
-						int check = edgeCheck(piece);
+					//Double check for I piece.  I imagine a better
+					//way to handle this exists.
+					if (this->piece.getType() == 'I') {
+						check == newEdgeCheck();
 						switch(check) {
 							case -1:
-								piece->moveRight();
+								this->piece.moveRight();
 								break;
 							case 1:
-								piece->moveLeft();
+								this->piece.moveLeft();
 								break;
-						}
-						//Double check for I piece.  I imagine a better
-						//way to handle this exists.
-						if (piece->getType() == 'I') {
-							check == edgeCheck(piece);
-							switch(check) {
-								case -1:
-									piece->moveRight();
-									break;
-								case 1:
-									piece->moveLeft();
-									break;
-							}
 						}
 					}
 				}
-				break;
 			}
-				
-			default: break;
+			break;
 		}
+			
+		default: break;
 	}
-	
-	return;
 }
 
 void Game::dropPiece(Board* board, Piece* piece)
@@ -308,4 +372,65 @@ int Game::getPieceIndex(int index, char vector)
 	} else if (vector == 'n') {
 		return this->next_order[index];
 	}
+}
+
+void Game::setPieceList()
+{
+	this->piece_list[0].setType('Z');
+	this->piece_list[1].setType('S');
+	this->piece_list[2].setType('J');
+	this->piece_list[3].setType('L');
+	this->piece_list[4].setType('T');
+	this->piece_list[5].setType('O');
+	this->piece_list[6].setType('I');
+}
+
+void Game::run()
+{
+	initializePieces();
+	
+	sf::Clock clock;
+	
+	this->text.window.clear(sf::Color(160, 160, 160));
+	this->text.window.display();	
+	
+	while(this->text.window.isOpen())
+	{
+		sf::Time elapsed = clock.restart();
+		float dt = elapsed.asSeconds();
+		sf::Event event;
+		while(this->text.window.pollEvent(event))
+		{
+			handleInput(event);
+		}
+	}
+}
+
+void Game::pushState(GameState* state)
+{
+	this->states.push(state);
+	
+	return;
+}
+
+void Game::popState()
+{
+	delete this->states.top();
+	this->states.pop();
+	
+	return;
+}
+
+void Game::peekState()
+{
+	if(this->states.empty()) return nullptr;
+	return this->states.top();
+}
+
+void Game::initializePieces()
+{
+	this->piece.setType(this->piece_list[getPieceIndex(this->piece_index, 'c')].getType());
+	this->preview_one.setType(this->piece_list[getPieceIndex(this->piece_index + 1, 'c')].getType(), 1);
+	this->preview_two.setType(this->piece_list[getPieceIndex(this->piece_index + 2, 'c')].getType(), 2);
+	this->preview_thr.setType(this->piece_list[getPieceIndex(this->piece_index + 3, 'c')].getType(), 3);
 }

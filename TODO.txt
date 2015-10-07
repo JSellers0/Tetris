@@ -20,6 +20,11 @@
 
 Bugs
 	* Left Panel glitch on refresh
+	
+Cleanup
+	* Should Board check for ability to move down, left, right, etc.
+	* Text to texture manager in anticipation of separate screen needs
+	* Preview Piece shit in its own function
 
 Level parameters
 	* drop speed
@@ -30,6 +35,11 @@ Special flash for 4 line clear
 
 Rotate Right
 
+GameState Menu
+GameState Play
+GameState Pause
+GameState Lose
+
 Main Menu, Pause, and Game Over Screens
 	* SFML Rectangle Shape transparency
 	* Menu/Screen Layouts
@@ -37,6 +47,7 @@ Main Menu, Pause, and Game Over Screens
 
 Consolidate
 	* Move everything from tetris into game.run()
+	* Break text into appropriate GameStates
 	
 Documentation
 	

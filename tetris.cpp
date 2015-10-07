@@ -46,6 +46,9 @@ int main()
 	Board *board = &pboard;
 	Game game;
 	
+	game.run();
+	
+	//Copied
 	piece_list[0].setType('Z');
 	piece_list[1].setType('S');
 	piece_list[2].setType('J');
@@ -56,6 +59,7 @@ int main()
 	
 	int piece_index = 0;
 	
+	//copied
 	piece = &piece_list[game.getPieceIndex(piece_index, 'c')];
 	preview_one.setType(piece_list[game.getPieceIndex(piece_index + 1, 'c')].getType(), 1);
 	preview_two.setType(piece_list[game.getPieceIndex(piece_index + 2, 'c')].getType(), 2);

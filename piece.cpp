@@ -284,7 +284,6 @@ void Piece::init(sf::Color color, char color_code, int origin_col, int origin_ro
 	this->type = type;
 	this->color = color;
 	this->color_code = color_code;
-	// Probably easier to handle rotation with board system and then convertBoardtoPixel.
 	this->origin_col = origin_col;
 	this->origin_row = origin_row;
 	this->origin_col_start = origin_col;

@@ -26,9 +26,9 @@
 
 Board::Board()
 {
-	this->setColorMap();
-	this->setBoard();
-	this->can_drop = true;
+	setColorMap();
+	setBoard();
+	can_drop = true;
 }
 
 void Board::setColorMap()
@@ -158,5 +158,3 @@ int Board::clearRows(int row)
 	
 	return total_rows;
 }
-
-
