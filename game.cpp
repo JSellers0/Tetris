@@ -37,12 +37,12 @@
 
 Game::Game()
 {
-	//this->loadTextures();
+	this->loadTextures();
 	
 	this->window.create(sf::VideoMode(800,600), "Tetris via SFML");
 	this->window.setFramerateLimit(60);
 	
-	//this->background.setTexture(this->texmgr.getRef("background"));
+	this->background.setTexture(this->texmgr.getRef("background"));
 	
 	initializeBackgrounds();
 	setPieceList();
@@ -444,5 +444,5 @@ void Game::initializePieces()
 
 void Game::loadTextures()
 {
-	texmgr.loadTexture("background", "media/background.png");
+	this->texmgr.loadTexture("background", "media/background.png");
 }
