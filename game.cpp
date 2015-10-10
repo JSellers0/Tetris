@@ -27,7 +27,9 @@
 
 
 #include "game.hpp"
-#include "gamestate.hpp"
+#include "game_state.hpp"
+#include "texture_manager.hpp"
+
 #include "board.hpp"
 #include "piece.hpp"
 #include "text.hpp"
@@ -35,8 +37,13 @@
 
 Game::Game()
 {
+	//this->loadTextures();
+	
 	this->window.create(sf::VideoMode(800,600), "Tetris via SFML");
 	this->window.setFramerateLimit(60);
+	
+	//this->background.setTexture(this->texmgr.getRef("background"));
+	
 	initializeBackgrounds();
 	setPieceList();
 	setVectors();
@@ -421,7 +428,7 @@ void Game::popState()
 	return;
 }
 
-void Game::peekState()
+GameState* Game::peekState()
 {
 	if(this->states.empty()) return nullptr;
 	return this->states.top();
@@ -433,4 +440,9 @@ void Game::initializePieces()
 	this->preview_one.setType(this->piece_list[getPieceIndex(this->piece_index + 1, 'c')].getType(), 1);
 	this->preview_two.setType(this->piece_list[getPieceIndex(this->piece_index + 2, 'c')].getType(), 2);
 	this->preview_thr.setType(this->piece_list[getPieceIndex(this->piece_index + 3, 'c')].getType(), 3);
+}
+
+void Game::loadTextures()
+{
+	texmgr.loadTexture("background", "media/background.png");
 }

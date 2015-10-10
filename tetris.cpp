@@ -30,12 +30,28 @@
 
 #include "piece.hpp"
 #include "board.hpp"
-#include "game.hpp"
 #include "dbg.h"
 
-using namespace std;
+#include "game.hpp"
+#include "game_state_menu.hpp"
 
 int main()
+{
+	/* Debugging, run the old game */
+	//old();
+	
+	
+	Game game;
+	
+	game.pushState(new GameStateMenu(&game));
+	game.run();
+	
+	return 0;
+	
+}
+
+
+void old()
 {
 	Piece piece_list[7];
 	Piece *piece;

@@ -17,12 +17,13 @@
 # 
 
 PREFIX?=/usr/local
-CFLAGS=-g -Wall -std=gnu++11 -I${PREFIX}/include/SFML/
+CXX = g++
+CXXFLAGS=-g -Wall -std=c++11 -I${PREFIX}/include/SFML/
 LDFLAGS=-L${PREFIX}/lib -lsfml-graphics -lsfml-window -lsfml-system
 
 all: tetris
 
-tetris: piece.o board.o game.o text.o
+tetris: piece.o board.o game.o text.o game_state_menu.o game_state_main.o texture_manager.o
 
 piece: piece.o
 
@@ -31,6 +32,12 @@ board: board.o
 game: game.o
 
 text: text.o
+
+game_state_menu: game_state_menu.o
+
+game_state_main: game_state_main.o
+
+texture_manager: texture_manager.o
 
 clean:
 	rm -f *.o

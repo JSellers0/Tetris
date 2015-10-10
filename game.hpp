@@ -29,6 +29,8 @@
 #include <ctime>
 #include <stack>
 
+#include "texture_manager.hpp"
+
 #include "text.hpp"
 #include "piece.hpp"
 #include "board.hpp"
@@ -56,6 +58,8 @@ class Game
 		void setVectors();
 		
 		void setPieceList();
+		
+		void loadTextures();
 		
 	// Private Members
 	private:	
@@ -91,9 +95,21 @@ class Game
 		 
 		//Public Members
 		Text text;
-		sf::RenderWindow window;
+		
 		
 		//Public Methods
+		
+		/* GameState Changes */
+		std::stack<GameState*> states;
+		
+		sf::RenderWindow window;
+		TextureManager texmgr;
+		sf::Sprite background;
+		
+		void pushState(GameState* state);
+		void popState();
+		void changeState(GameState* state);
+		GameState* peekState();
 		
 		/** Returns the availability of space below the piece.  Currently
 		  * uses pointer parameters because of not having game.run() set
@@ -166,11 +182,7 @@ class Game
 		
 		void run();
 		
-		std::stack<GameState*> states;
-		void pushState(GameState* state);
-		void popState();
-		void changeState(GameState* state);
-		GameState* peekState();
+		
 		
 };
 #endif
