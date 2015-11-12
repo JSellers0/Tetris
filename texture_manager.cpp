@@ -20,3 +20,8 @@ sf::Texture& TextureManager::getRef(const std::string& texture)
 {
 	return this->textures.at(texture);
 }
+
+void TextureManager::loadFont(const std::string& filename)
+{
+	this->font.loadFromFile(filename);
+}

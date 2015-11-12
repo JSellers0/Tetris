@@ -35,10 +35,16 @@ class TextureManager
 	/* Array of textures used */
 	std::map<std::string, sf::Texture>textures;
 	
+	/* Font Object */
+	sf::Font font;
+	
 	public:
 	
 	/* Add a texture from a file */
 	void loadTexture(const std::string& name, const std::string& filename);
+	
+	/* Add a font from a file */
+	void loadFont(const std::string& filename);
 	
 	/* Translate an id into a reference */
 	sf::Texture& getRef(const std::string& texture);

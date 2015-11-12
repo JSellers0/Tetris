@@ -50,7 +50,7 @@ int main()
 	
 }
 
-
+/*
 void old()
 {
 	Piece piece_list[7];
@@ -218,3 +218,4 @@ void old()
 	}
 }
 
+*/

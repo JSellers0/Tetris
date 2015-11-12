@@ -25,6 +25,14 @@
  
  #include "game_state.hpp"
  #include "game_state_main.hpp"
+ #include "game_state_pause.hpp"
+ 
+ void GameStateMain::pauseGame()
+ {
+	 this->game->pushState(new GameStatePause(this->game));
+	 
+	 return;
+ }
  
  void GameStateMain::draw(const float dt)
  {
@@ -63,7 +71,13 @@ void GameStateMain::handleInput()
 					float(event.size.height)/ float(this->game->background.getTexture()->getSize().y));
 				break;
 			}
-			default: break;
+			/* Keyboard Events */
+			case sf::Event::KeyPressed:
+			{
+				if(event.key.code == sf::Keyboard::P) this->pauseGame();
+				break;
+			}
+  			default: break;
 		}
 	}
 	

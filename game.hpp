@@ -76,6 +76,8 @@ class Game
 		
 		sf::RectangleShape board_background;
 		sf::RectangleShape left_panel;
+		//This should be eliminated; only the piece preview rect needs
+		//to be redrawn each piece change.
 		sf::RectangleShape right_panel;
 		sf::RectangleShape piece_preview;
 		sf::RectangleShape hidden_rows;
@@ -119,8 +121,7 @@ class Game
 		  * @param *piece The address of a piece
 		  * @return true if there is space available below the piece otherwise false
 		  */ 
-		bool checkDown(Board* board, Piece* piece);
-		bool newCheckDown();
+		bool checkDown();
 		
 		/** Returns the availability of space to the left of the piece.  
 		  * Currently uses pointer parameters because of not having 
@@ -130,8 +131,7 @@ class Game
 		  * @param *piece The address of a piece
 		  * @return true if there is space available left of the piece otherwise false
 		  */
-		bool checkLeft(Board* board, Piece *piece);
-		bool newCheckLeft();
+		bool checkLeft();
 		
 		/** Returns the availability of space to the right of the piece.  
 		  * Currently uses pointer parameters because of not having 
@@ -141,8 +141,7 @@ class Game
 		  * @param *piece The address of a piece
 		  * @return true if there is space available right of the piece otherwise false
 		  */
-		bool checkRight(Board* board, Piece *piece);
-		bool newCheckRight();
+		bool checkRight();
 		
 		/** Checks for edge overlap following piece rotation.
 		  * Currently uses pointer parameters because of not having 
@@ -152,8 +151,7 @@ class Game
 		  * @return -1 if the piece is overlapping the left edge
 		  * @return 1 if the piece is overlapping the right edge
 		  */
-		int edgeCheck(Piece *piece);
-		int newEdgeCheck();
+		int edgeCheck();
 		
 		/** Checks the top row for pieces after tetris.cpp gets a new piece.
 		  * This probably creates a bug wherein you can stack pieces all the
@@ -165,12 +163,11 @@ class Game
 		  */
 		bool checkLose(Board* board);
 		
-		void draw(Board* board, Piece* piece);
-		void drawPreview(Piece piece_one, Piece piece_two, Piece piece_three);
+		void draw();
+		void drawPreview();
 		void drawPanels();
 		void update(int);
 		void handleInput(sf::Event event);
-		void gameloop(Board* board, Piece* piece);
 		void dropPiece(Board* board, Piece* piece);
 		
 		int levelUp();

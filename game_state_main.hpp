@@ -34,6 +34,8 @@ class GameStateMain : public GameState
 	
 	sf::View gameView;
 	
+	void pauseGame();
+	
 	public:
 	
 	virtual void draw(const float dt);

@@ -66,7 +66,7 @@ int Game::levelUp()
 	return 1;
 }
 
-void Game::draw(Board* board, Piece* piece)
+void Game::draw()
 {
 	//clear the board area
 	this->window.draw(this->board_background);
@@ -77,28 +77,34 @@ void Game::draw(Board* board, Piece* piece)
 			block.setSize(sf::Vector2f(BLOCK_SIZE, BLOCK_SIZE));
 			block.setOutlineThickness(OUTLINE);
 			block.setOutlineColor(sf::Color::Black);
-			block.setFillColor(board->getMapColor(board->getCell(row, col)));
-			block.setPosition(piece->convertBoardtoPixel(row, col));
+			block.setFillColor(this->board.getMapColor(this->board.getCell(row, col)));
+			block.setPosition(this->piece.convertBoardtoPixel(row, col));
 			this->window.draw(block);
 		}
 	}
 	//draw the piece
 	for (int block=0; block<4; block++) {
-		this->window.draw(piece->getBlock(block));
+		this->window.draw(this->piece.getBlock(block));
 	}
 	//draw the rectangle that hides the hidden rows
 	this->window.draw(this->hidden_rows);
 	
+	//draw the panels
+	drawPanels();
+	
+	//draw preview pieces
+	drawPreview();
+	
 	this->window.display();
 }
 
-void Game::drawPreview(Piece piece_one, Piece piece_two, Piece piece_three)
+void Game::drawPreview()
 {
 	this->window.draw(this->piece_preview);
 	for (int block=0; block<4; block++) {
-		this->window.draw(piece_one.getBlock(block));
-		this->window.draw(piece_two.getBlock(block));
-		this->window.draw(piece_three.getBlock(block));
+		this->window.draw(this->preview_one.getBlock(block));
+		this->window.draw(this->preview_two.getBlock(block));
+		this->window.draw(this->preview_thr.getBlock(block));
 	}
 	
 	this->window.display();
@@ -147,7 +153,7 @@ void Game::initializeBackgrounds()
 	this->piece_preview.setSize(sf::Vector2f(175, 400));
 }
 
-bool Game::newCheckDown()
+bool Game::checkDown()
 {
 	for (int block=0; block<4; block++) {
 		int row = this->piece.getBlockRow(block) + 1;
@@ -163,37 +169,7 @@ bool Game::newCheckDown()
 	return true;
 }
 
-bool Game::checkDown(Board* board, Piece* piece)
-{
-	for (int block=0; block<4; block++) {
-		int row = piece->getBlockRow(block) + 1;
-		
-		if (row == BOARD_HEIGHT) {
-			board->setCanDrop(false);
-			return false;
-		} else if (board->getCell(row, piece->getBlockCol(block)) != 'n') {
-			board->setCanDrop(false);
-			return false;
-		}
-	}
-	return true;
-}
-
-bool Game::checkLeft(Board* board, Piece* piece)
-{
-	for (int block=0; block<4; block++) {
-		int col = piece->getBlockCol(block) - 1;
-		
-		if (col < 0) {
-			return false;
-		}else if (board->getCell(piece->getBlockRow(block), col) != 'n') {
-			return false;
-		}
-	}
-	return true;
-}
-
-bool Game::newCheckLeft()
+bool Game::checkLeft()
 {
 	for (int block=0; block<4; block++) {
 		int col = this->piece.getBlockCol(block) - 1;
@@ -207,7 +183,7 @@ bool Game::newCheckLeft()
 	return true;
 }
 
-bool Game::newCheckRight()
+bool Game::checkRight()
 {
 	for (int block=0; block<4; block++) {
 		int col = this->piece.getBlockCol(block) + 1;
@@ -220,34 +196,8 @@ bool Game::newCheckRight()
 	}
 	return true;
 }
-	
-bool Game::checkRight(Board* board, Piece* piece)
-{
-	for (int block=0; block<4; block++) {
-		int col = piece->getBlockCol(block) + 1;
-		
-		if (col == BOARD_WIDTH) {
-			return false;
-		}else if (board->getCell(piece->getBlockRow(block), col) != 'n') {
-			return false;
-		}
-	}
-	return true;
-}
 
-int Game::edgeCheck(Piece* piece)
-{
-	for (int block=0; block<4; block++) {
-		int col = piece->getBlockCol(block);
-		if (col < 0) {
-			return -1;
-		} else if (col >= BOARD_WIDTH) {
-			return 1;
-		}
-	}
-}
-
-int Game::newEdgeCheck()
+int Game::edgeCheck()
 {
 	for (int block=0; block<4; block++) {
 		int col = this->piece.getBlockCol(block);
@@ -290,21 +240,21 @@ void Game::handleInput(sf::Event event)
 			} else if (event.key.code == sf::Keyboard::P) {
 				this->board.printBoard();
 			} else if (event.key.code == sf::Keyboard::Down) {
-				if (newCheckDown()) {
+				if (checkDown()) {
 					this->piece.moveDown();
 				}
 			} else if (event.key.code == sf::Keyboard::Left) {
-				if (newCheckLeft()) {
+				if (checkLeft()) {
 					this->piece.moveLeft();
 				}
 			} else if (event.key.code == sf::Keyboard::Right) {
-				if (newCheckRight()) {
+				if (checkRight()) {
 					this->piece.moveRight();
 				}
 			} else if (event.key.code == sf::Keyboard::Space) {
-				if (newCheckDown()) {
+				if (checkDown()) {
 					this->piece.rotateLeft();
-					int check = newEdgeCheck();
+					int check = edgeCheck();
 					switch(check) {
 						case -1:
 							this->piece.moveRight();
@@ -316,7 +266,7 @@ void Game::handleInput(sf::Event event)
 					//Double check for I piece.  I imagine a better
 					//way to handle this exists.
 					if (this->piece.getType() == 'I') {
-						check == newEdgeCheck();
+						check == edgeCheck();
 						switch(check) {
 							case -1:
 								this->piece.moveRight();
@@ -338,7 +288,7 @@ void Game::handleInput(sf::Event event)
 void Game::dropPiece(Board* board, Piece* piece)
 {
 	while (board->getCanDrop()) {
-		if (this->checkDown(board, piece)) {
+		if (this->checkDown()) {
 			piece->moveDown();
 		}
 	}
