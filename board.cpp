@@ -69,12 +69,12 @@ sf::Color Board::getMapColor(char color_key)
 	return color_map[color_key];
 }
 
-void Board::logPiece(Piece *piece)
+void Board::logPiece(Piece piece)
 {
 	for(int block=0; block<4; block++) {
-		int row = piece->getBlockRow(block);
-		int col = piece->getBlockCol(block);
-		this->board[row][col] = tolower(piece->getColorCode());
+		int row = piece.getBlockRow(block);
+		int col = piece.getBlockCol(block);
+		this->board[row][col] = tolower(piece.getColorCode());
 	}
 }
 

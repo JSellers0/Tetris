@@ -22,10 +22,13 @@
  */ 
  
  #include <SFML/Graphics.hpp>
+ #include <utility>
+ #include <iostream>
  
  #include "game_state_menu.hpp"
  #include "game_state_main.hpp"
  #include "game_state.hpp"
+ #include "gui.hpp"
  
  void GameStateMenu::loadGame()
  {
@@ -41,6 +44,10 @@
 	 this->game->window.clear(sf::Color::Black);
 	 this->game->window.draw(this->game->background);
 	 
+	 for(auto gui : this->guiSystem) this->game->window.draw(gui.second);
+	 
+	 this->game->window.display();
+	 
 	 return;
 }
 
@@ -52,6 +59,9 @@ void GameStateMenu::update(const float dt)
 void GameStateMenu::handleInput()
 {
 	sf::Event event;
+	
+	sf::Vector2f mousePos = this->game->window.mapPixelToCoords(
+		sf::Mouse::getPosition(this->game->window), this->menuView);
 	
 	while(this->game->window.pollEvent(event))
 	{
@@ -74,6 +84,28 @@ void GameStateMenu::handleInput()
 					float(event.size.height)/ float(this->game->background.getTexture()->getSize().y));
 				break;
 			}
+			/* Highlight menu items. */
+			case sf::Event::MouseMoved:
+			{
+				this->guiSystem.at("menu").highlight(this->guiSystem.at("menu").getEntry(mousePos));
+				break;
+			}
+			
+			/* Click on menu items. */
+			case sf::Event::MouseButtonPressed:
+			{
+				if(event.mouseButton.button == sf::Mouse::Left)
+				{
+					std::string msg = this->guiSystem.at("menu").activate(mousePos);
+					
+					if(msg == "load_game")
+					{
+						this->loadGame();
+					}
+				}
+				break;
+			}
+			
 			/* Key Events */
 			case sf::Event::KeyPressed:
 			{
@@ -91,9 +123,28 @@ void GameStateMenu::handleInput()
 
 GameStateMenu::GameStateMenu(Game* game)
 {
+	
+	std::cout << "Menu pushed, setting game.";
 	this->game = game;
 	sf::Vector2f pos = sf::Vector2f(this->game->window.getSize());
 	this->menuView.setSize(pos);
 	pos *= 0.5f;
 	this->menuView.setCenter(pos);
+	
+	std::cout << "Initializing guiSystem.";
+	Gui gui = Gui(sf::Vector2f(192,32), 4, false, game->stylesheets.at("button"), {std::make_pair("Load Game", "load_game")} );
+	this->guiSystem.insert(std::make_pair("menu", gui));
+	
+	std::cout << "guiSystem Initialized.  Setting locations.";
+			
+	this->guiSystem.at("menu").setPosition(pos);
+	this->guiSystem.at("menu").setOrigin(96,32*1/2);
+	this->guiSystem.at("menu").show();
+	
+	while(game->window.isOpen())
+	{
+		handleInput();
+		draw(0);
+	}
+	
 }

@@ -34,6 +34,7 @@
 #include "text.hpp"
 #include "piece.hpp"
 #include "board.hpp"
+#include "gui.hpp"
 
 class GameState;
 
@@ -60,6 +61,10 @@ class Game
 		void setPieceList();
 		
 		void loadTextures();
+		void loadStyleSheets();
+		void loadFonts();
+		
+		void updatePieces(int index);
 		
 	// Private Members
 	private:	
@@ -71,6 +76,7 @@ class Game
 		int drop_decrement;
 		int piece_index;
 		
+		sf::Clock clock;
 		clock_t start_time;
 		clock_t current_time;
 		
@@ -97,17 +103,18 @@ class Game
 		 
 		//Public Members
 		Text text;
-		
-		
-		//Public Methods
-		
-		/* GameState Changes */
 		std::stack<GameState*> states;
 		
 		sf::RenderWindow window;
 		TextureManager texmgr;
 		sf::Sprite background;
 		
+		std::map<std::string, GuiStyle> stylesheets;
+		std::map<std::string, sf::Font> fonts;
+		
+		//Public Methods
+		
+		/* GameState Changes */
 		void pushState(GameState* state);
 		void popState();
 		void changeState(GameState* state);
@@ -161,13 +168,13 @@ class Game
 		  * @param *board the address of a board
 		  * @return true if there is a piece in the top row already
 		  */
-		bool checkLose(Board* board);
+		bool checkLose();
 		
 		void draw();
 		void drawPreview();
 		void drawPanels();
 		void update(int);
-		void handleInput(sf::Event event);
+		void handleInput();
 		void dropPiece(Board* board, Piece* piece);
 		
 		int levelUp();

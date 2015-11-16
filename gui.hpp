@@ -68,7 +68,7 @@ class GuiEntry
 	sf::RectangleShape shape;
 	
 	/* String returned when the entry is activated */
-	sdt::string message;
+	std::string message;
 	
 	/* Text displayed on the entry */
 	sf::Text text;
@@ -125,9 +125,9 @@ class Gui : public sf::Transformable, public sf::Drawable
 				text.setString(entry.first);
 				text.setFont(*style.font);
 				text.setColor(style.textCol);
-				text.setCharacterSize(dimensions.y-style-padding);
+				text.setCharacterSize(dimensions.y-style.borderSize-padding);
 				
-				this->entires.push_back(GuiEntry(entry.second, shape, text));
+				this->entries.push_back(GuiEntry(entry.second, shape, text));
 			}
 		}
 		
@@ -141,10 +141,10 @@ class Gui : public sf::Transformable, public sf::Drawable
 		void setEntryText(int entry, std::string text);
 		
 		/* Change the entry dimensions */
-		vid setDimensions(sf::Vector2f dimensions);
+		void setDimensions(sf::Vector2f dimensions);
 		
 		/* Draw the menu. */
-		virtual void draw(sf::renderTarget& target, sf::RenderStates states) const;
+		virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 		
 		void show();
 		

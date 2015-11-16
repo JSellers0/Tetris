@@ -25,14 +25,19 @@
 #define GAME_STATE_MENU_HPP
 
 #include <SFML/Graphics.hpp>
+#include <map>
+#include <string>
 
 #include "game_state.hpp"
+#include "gui.hpp"
 
 class GameStateMenu : public GameState
 {
 	private:
 	
 	sf::View menuView;
+	
+	std::map<std::string, Gui> guiSystem;
 	
 	void loadGame();
 	

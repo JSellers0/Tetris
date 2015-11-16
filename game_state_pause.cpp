@@ -21,7 +21,8 @@
  * THE SOFTWARE.
  */ 
  
-#include <SFML/Graphics>
+#include <SFML/Graphics.hpp>
+#include <utility>
 
 #include "game_state_pause.hpp"
 #include "game_state.hpp"
@@ -61,4 +62,13 @@ void GameStatePause::handleInput()
 			
 		}
 	}
+}
+
+GameStatePause::GameStatePause(Game* game)
+{
+	this->game = game;
+	sf::Vector2f pos = sf::Vector2f(this->game->window.getSize());
+	this->pauseView.setSize(pos);
+	pos *=0.5f;
+	this->pauseView.setCenter(pos);
 }

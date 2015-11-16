@@ -40,11 +40,10 @@ int main()
 	/* Debugging, run the old game */
 	//old();
 	
-	
 	Game game;
-	
+	game.window.setTitle("Tetris Main Menu");
 	game.pushState(new GameStateMenu(&game));
-	game.run();
+	//game.run();
 	
 	return 0;
 	
@@ -53,100 +52,9 @@ int main()
 /*
 void old()
 {
-	Piece piece_list[7];
-	Piece *piece;
-	Piece preview_one;
-	Piece preview_two;
-	Piece preview_three;
-	Board pboard;
-	Board *board = &pboard;
-	Game game;
-	
-	game.run();
-	
-	//Copied
-	piece_list[0].setType('Z');
-	piece_list[1].setType('S');
-	piece_list[2].setType('J');
-	piece_list[3].setType('L');
-	piece_list[4].setType('T');
-	piece_list[5].setType('O');
-	piece_list[6].setType('I');
-	
-	int piece_index = 0;
-	
-	//copied
-	piece = &piece_list[game.getPieceIndex(piece_index, 'c')];
-	preview_one.setType(piece_list[game.getPieceIndex(piece_index + 1, 'c')].getType(), 1);
-	preview_two.setType(piece_list[game.getPieceIndex(piece_index + 2, 'c')].getType(), 2);
-	preview_three.setType(piece_list[game.getPieceIndex(piece_index + 3, 'c')].getType(), 3);
-	
-	game.window.clear(sf::Color(160, 160, 160));
-	game.drawPanels();
-	game.drawPreview(preview_one, preview_two, preview_three);
 	
 	clock_t start_time = clock();
 	clock_t current_time;
-	
-	while (game.window.isOpen()) {
-		sf::Event event;
-		while (game.window.pollEvent(event)) {
-			switch(event.type)
-			{
-				case sf::Event::Closed:
-					game.window.close();
-					break;
-					
-				case sf::Event::KeyPressed: {
-					if (event.key.code == sf::Keyboard::Escape) {
-						game.window.close();
-					} else if (event.key.code == sf::Keyboard::P) {
-						board->printBoard();
-					} else if (event.key.code == sf::Keyboard::Down) {
-						if (game.checkDown(board, piece)) {
-							piece->moveDown();
-						}
-					} else if (event.key.code == sf::Keyboard::Left) {
-						if (game.checkLeft(board, piece)) {
-							piece->moveLeft();
-						}
-					} else if (event.key.code == sf::Keyboard::Right) {
-						if (game.checkRight(board, piece)) {
-							piece->moveRight();
-						}
-					} else if (event.key.code == sf::Keyboard::Space) {
-						if (game.checkDown(board, piece)) {
-							piece->rotateLeft();
-							int check = game.edgeCheck(piece);
-							switch(check) {
-								case -1:
-									piece->moveRight();
-									break;
-								case 1:
-									piece->moveLeft();
-									break;
-							}
-							//Double check for I piece.  I imagine a better
-							//way to handle this exists.
-							if (piece->getType() == 'I') {
-								check = game.edgeCheck(piece);
-								switch(check) {
-									case -1:
-										piece->moveRight();
-										break;
-									case 1:
-										piece->moveLeft();
-										break;
-								}
-							}
-						}
-					} else if (event.key.code == sf::Keyboard::Up) {
-						game.dropPiece(board, piece);
-					}
-					break;
-				}
-			}
-		}
 		
 		if (clock() - start_time > game.getDropRate()) {
 			if (game.checkDown(board, piece)) {
@@ -168,42 +76,6 @@ void old()
 			}
 			
 			piece_index++;
-						
-			switch(piece_index)
-			{
-				case 4:
-					preview_one.setType(piece_list[game.getPieceIndex(piece_index + 1, 'c')].getType(), 1);
-					preview_two.setType(piece_list[game.getPieceIndex(piece_index + 2, 'c')].getType(), 2);
-					preview_three.setType(piece_list[game.getPieceIndex(0, 'n')].getType(), 3);
-					break;
-					
-				case 5:
-					preview_one.setType(piece_list[game.getPieceIndex(piece_index + 1, 'c')].getType(), 1);
-					preview_two.setType(piece_list[game.getPieceIndex(0, 'n')].getType(), 2);
-					preview_three.setType(piece_list[game.getPieceIndex(1,'n')].getType(),3);
-					break;
-					
-				case 6:
-					preview_one.setType(piece_list[game.getPieceIndex(0, 'n')].getType(), 1);
-					preview_two.setType(piece_list[game.getPieceIndex(1, 'n')].getType(), 2);
-					preview_three.setType(piece_list[game.getPieceIndex(2,'n')].getType(),3);
-					break;
-				
-				case 7:
-					game.setOrder('c');
-					game.setOrder('n');
-					piece_index = 0;
-					preview_one.setType(piece_list[game.getPieceIndex(piece_index + 1, 'c')].getType(), 1);
-					preview_two.setType(piece_list[game.getPieceIndex(piece_index + 2, 'c')].getType(), 2);
-					preview_three.setType(piece_list[game.getPieceIndex(piece_index + 3,'c')].getType(),3);
-					break;
-					
-				default:
-					preview_one.setType(piece_list[game.getPieceIndex(piece_index + 1, 'c')].getType(), 1);
-					preview_two.setType(piece_list[game.getPieceIndex(piece_index + 2, 'c')].getType(), 2);
-					preview_three.setType(piece_list[game.getPieceIndex(piece_index + 3,'c')].getType(),3);
-					break;
-			}
 			
 			piece = &piece_list[game.getPieceIndex(piece_index, 'c')];
 			game.drawPreview(preview_one, preview_two, preview_three);

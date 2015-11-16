@@ -22,8 +22,6 @@
 
 Text::Text()
 {
-	this->window.create(sf::VideoMode(800,600), "Tetris via SFML");
-	this->window.setFramerateLimit(60);
 	lr_increment = 5;
 	level = 20;
 	initializeFont();

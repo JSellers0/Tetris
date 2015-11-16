@@ -44,7 +44,7 @@ class Board
 		void setCell(int row, int col, char color_code);
 		char getCell(int row, int col);
 		sf::Color getMapColor(char color_key);
-		void logPiece(Piece* piece);
+		void logPiece(Piece piece);
 		bool getCanDrop() {return can_drop;};
 		void setCanDrop(bool droppable);
 		void printBoard();

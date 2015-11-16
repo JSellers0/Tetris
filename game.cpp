@@ -43,6 +43,8 @@ Game::Game()
 	this->window.setFramerateLimit(60);
 	
 	this->background.setTexture(this->texmgr.getRef("background"));
+	loadFonts();
+	loadStyleSheets();
 	
 	initializeBackgrounds();
 	setPieceList();
@@ -209,11 +211,11 @@ int Game::edgeCheck()
 	}
 }
 
-bool Game::checkLose(Board* board)
+bool Game::checkLose()
 {
 	int n_count = BOARD_WIDTH;
 	for (int col=0; col<BOARD_WIDTH; col++) {
-		if (board->getCell(1, col) != 'n') {
+		if (this->board.getCell(1, col) != 'n') {
 			n_count--;
 		}
 	}
@@ -225,48 +227,41 @@ bool Game::checkLose(Board* board)
 	}
 }
 
-void Game::handleInput(sf::Event event)
+void Game::handleInput()
 {
-	switch(event.type)
-	{
-		case sf::Event::Closed:
-			this->text.window.close();
-			break;
-			
-		case sf::Event::KeyPressed:
+	sf::Event event;
+	
+	while(this->window.pollEvent(event))
+	{	
+		switch(event.type)
 		{
-			if (event.key.code == sf::Keyboard::Escape) {
-				this->text.window.close();
-			} else if (event.key.code == sf::Keyboard::P) {
-				this->board.printBoard();
-			} else if (event.key.code == sf::Keyboard::Down) {
-				if (checkDown()) {
-					this->piece.moveDown();
-				}
-			} else if (event.key.code == sf::Keyboard::Left) {
-				if (checkLeft()) {
-					this->piece.moveLeft();
-				}
-			} else if (event.key.code == sf::Keyboard::Right) {
-				if (checkRight()) {
-					this->piece.moveRight();
-				}
-			} else if (event.key.code == sf::Keyboard::Space) {
-				if (checkDown()) {
-					this->piece.rotateLeft();
-					int check = edgeCheck();
-					switch(check) {
-						case -1:
-							this->piece.moveRight();
-							break;
-						case 1:
-							this->piece.moveLeft();
-							break;
+			case sf::Event::Closed:
+			{
+				this->window.close();
+				break;
+			}	
+			case sf::Event::KeyPressed:
+			{
+				if (event.key.code == sf::Keyboard::Escape) {
+					this->window.close();
+				} else if (event.key.code == sf::Keyboard::P) {
+					this->board.printBoard();
+				} else if (event.key.code == sf::Keyboard::Down) {
+					if (checkDown()) {
+						this->piece.moveDown();
 					}
-					//Double check for I piece.  I imagine a better
-					//way to handle this exists.
-					if (this->piece.getType() == 'I') {
-						check == edgeCheck();
+				} else if (event.key.code == sf::Keyboard::Left) {
+					if (checkLeft()) {
+						this->piece.moveLeft();
+					}
+				} else if (event.key.code == sf::Keyboard::Right) {
+					if (checkRight()) {
+						this->piece.moveRight();
+					}
+				} else if (event.key.code == sf::Keyboard::Space) {
+					if (checkDown()) {
+						this->piece.rotateLeft();
+						int check = edgeCheck();
 						switch(check) {
 							case -1:
 								this->piece.moveRight();
@@ -275,13 +270,26 @@ void Game::handleInput(sf::Event event)
 								this->piece.moveLeft();
 								break;
 						}
+						//Double check for I piece.  I imagine a better
+						//way to handle this exists.
+						if (this->piece.getType() == 'I') {
+							check == edgeCheck();
+							switch(check) {
+								case -1:
+									this->piece.moveRight();
+									break;
+								case 1:
+									this->piece.moveLeft();
+									break;
+							}
+						}
 					}
 				}
+				break;
 			}
-			break;
+				
+			default: break;
 		}
-			
-		default: break;
 	}
 }
 
@@ -346,20 +354,45 @@ void Game::run()
 {
 	initializePieces();
 	
-	sf::Clock clock;
+	this->window.clear(sf::Color(160,160,160));
+	this->drawPanels();
+	this->drawPreview();
 	
-	this->text.window.clear(sf::Color(160, 160, 160));
-	this->text.window.display();	
+	this->clock.restart();
 	
-	while(this->text.window.isOpen())
+	while(this->window.isOpen())
 	{
-		sf::Time elapsed = clock.restart();
-		float dt = elapsed.asSeconds();
-		sf::Event event;
-		while(this->text.window.pollEvent(event))
+		//float dt = elapsed.asSeconds();
+		handleInput();
+		/*
+		this->current_time = this->clock.restart();
+		if (current_time.asSeconds() > this->drop_rate)
 		{
-			handleInput(event);
+			if(this->checkDown()) this->piece.moveDown();
 		}
+		*/	
+		if (not this->board.getCanDrop())
+		{
+			this->board.logPiece(this->piece);
+			this->piece.reset();
+			int clear = this->board.checkRows();
+			if (clear)
+			{
+				int lines = this->board.clearRows(clear);
+				if (this->text.update(lines)) this->levelUp();
+				
+				this->drawPanels();
+			}
+			
+			piece_index++;
+			
+			updatePieces(piece_index);
+			this->drawPreview();
+			
+			bool lost = checkLose();
+			if (!lost) this->board.setCanDrop(true);
+		}
+		this->draw();
 	}
 }
 
@@ -395,4 +428,81 @@ void Game::initializePieces()
 void Game::loadTextures()
 {
 	this->texmgr.loadTexture("background", "media/background.png");
+}
+
+void Game::loadFonts()
+{
+	sf::Font font;
+	font.loadFromFile("media/font.ttf");
+	this->fonts["main_font"] = font;
+	
+	return;
+}
+
+void Game::loadStyleSheets()
+{
+	this->stylesheets["button"] = GuiStyle(&this->fonts.at("main_font"), 1,
+		sf::Color(0xc6,0xc6,0xc6), sf::Color(0x94,0x94,0x94),
+		sf::Color(0x00,0x00,0x00), sf::Color(0x61,0x61,0x61),
+		sf::Color(0x94,0x94,0x94), sf::Color(0x00,0x00,0x00));
+	this->stylesheets["text"] = GuiStyle(&this->fonts.at("main_font"), 0,
+		sf::Color(0x00,0x00,0x00,0x00), sf::Color(0x00,0x00,0x00),
+		sf::Color(0xff,0xff,0xff), sf::Color(0x00,0x00,0x00,0x00),
+		sf::Color(0x00,0x00,0x00), sf::Color(0xff,0x00,0x00));
+		
+	return;
+}
+
+void Game::updatePieces(int index)
+{
+	if (index == 4)
+	{
+		this->preview_one.setType(this->piece_list[
+			getPieceIndex(5, 'c')].getType(), 1);
+		this->preview_two.setType(this->piece_list[
+			getPieceIndex(6, 'c')].getType(), 2);
+		this->preview_thr.setType(this->piece_list[
+			getPieceIndex(0, 'n')].getType(), 3);
+	} 
+	else if (index == 5)
+	{
+		this->preview_one.setType(this->piece_list[
+			getPieceIndex(6, 'c')].getType(), 1);
+		this->preview_two.setType(this->piece_list[
+			getPieceIndex(0, 'n')].getType(), 2);
+		this->preview_thr.setType(this->piece_list[
+			getPieceIndex(1, 'n')].getType(), 3);
+	}
+	else if (index == 6)
+	{
+		this->preview_one.setType(this->piece_list[
+			getPieceIndex(0, 'n')].getType(), 1);
+		this->preview_two.setType(this->piece_list[
+			getPieceIndex(1, 'n')].getType(), 2);
+		this->preview_thr.setType(this->piece_list[
+			getPieceIndex(2, 'n')].getType(), 3);
+	}
+	else if (index == 7)
+	{
+		this->setOrder('c');
+		this->setOrder('n');
+		this->piece_index = 0;
+		this->preview_one.setType(this->piece_list[
+			getPieceIndex(1, 'c')].getType(), 1);
+		this->preview_two.setType(this->piece_list[
+			getPieceIndex(2, 'c')].getType(), 2);
+		this->preview_thr.setType(this->piece_list[
+			getPieceIndex(3, 'c')].getType(), 3);
+	}
+	else
+	{
+		this->preview_one.setType(this->piece_list[
+			getPieceIndex(index + 1, 'c')].getType(), 1);
+		this->preview_two.setType(this->piece_list[
+			getPieceIndex(index + 2, 'c')].getType(), 2);
+		this->preview_thr.setType(this->piece_list[
+			getPieceIndex(index + 3, 'c')].getType(), 3);
+	}
+	
+	this->piece.setType(this->piece_list[piece_index].getType());
 }

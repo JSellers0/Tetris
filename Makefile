@@ -23,7 +23,7 @@ LDFLAGS=-L${PREFIX}/lib -lsfml-graphics -lsfml-window -lsfml-system
 
 all: tetris
 
-tetris: piece.o board.o game.o text.o game_state_menu.o game_state_main.o texture_manager.o
+tetris: piece.o board.o game.o text.o game_state_menu.o game_state_main.o texture_manager.o game_state_pause.o gui.o
 
 piece: piece.o
 
@@ -37,7 +37,13 @@ game_state_menu: game_state_menu.o
 
 game_state_main: game_state_main.o
 
+game_state_pause: game_state_pause.0
+
 texture_manager: texture_manager.o
+
+gui: gui.o
+
+
 
 clean:
 	rm -f *.o

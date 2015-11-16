@@ -143,3 +143,17 @@ void Gui::highlight(const int entry)
 	
 	return;
 }
+
+/* Return the message bound to the entry. */
+std::string Gui::activate(const int entry)
+{
+	if(entry == -1) return "null";
+	return entries[entry].message;
+}
+
+std::string Gui::activate(sf::Vector2f mousePos)
+{
+	int entry = this->getEntry(mousePos);
+	return this->activate(entry);
+}
+
