@@ -43,7 +43,7 @@ class Text {
 		//Left Panel
 		sf::Text score_label;
 		sf::Text score_text;
-		int score;
+		unsigned int score;
 		
 		sf::Text lc_label;
 		sf::Text lc_text;

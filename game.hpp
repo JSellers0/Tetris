@@ -64,7 +64,7 @@ class Game
 		void loadStyleSheets();
 		void loadFonts();
 		
-		void updatePieces(int index);
+		void updatePieces();
 		
 	// Private Members
 	private:	

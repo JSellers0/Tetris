@@ -19,16 +19,18 @@
 */ 
 
 #include "text.hpp"
+#include "dbg.h"
 
 Text::Text()
 {
+	score = 0;
 	lr_increment = 5;
 	level = 20;
 	initializeFont();
 	initializeLeftPanel();
 	initializeRightPanel();
-	this->lines_remain = this->lr_increment * this->level + this->level;
-	this->lr_text.setString(this->formatString(this->lines_remain));
+	lines_remain = lr_increment * level + level;
+	lr_text.setString(formatString(lines_remain));
 }
 
 void Text::initializeFont()
@@ -160,7 +162,7 @@ bool Text::update(int lines)
 	this->lines_clear += lines;
 	this->lines_remain -= lines;
 	//set score modifier
-	int modifier = 0;
+	int modifier;
 	switch(lines)
 	{
 		case 2:
@@ -174,7 +176,6 @@ bool Text::update(int lines)
 			break;
 	}
 	this->score += lines * 10 + modifier;
-	
 	this->score_text.setString(this->formatString(this->score));
 	this->lc_text.setString(this->formatString(this->lines_clear));
 	this->lr_text.setString(this->formatString(this->lines_remain));

@@ -19,12 +19,12 @@
 */ 
 
 Bugs
-	* Left Panel glitch on refresh
+	* SFML Time/Clock and drop system F-ed and confusing.
 	
 Cleanup
-	* Should Board check for ability to move down, left, right, etc.
-	* Text to texture manager in anticipation of separate screen needs
-	* Preview Piece shit in its own function
+	* Text vs texture manager in anticipation of separate screen needs
+	* Game is getting pretty long and unweildly, perhaps we can separate
+		some functionality into game_state_main.
 
 Level parameters
 	* drop speed
@@ -35,22 +35,14 @@ Special flash for 4 line clear
 
 Rotate Right
 
-GameState Menu
-GameState Play
-GameState Pause
 GameState Lose
 
-Main Menu, Pause, and Game Over Screens
+Pause, and Game Over Screens
 	* SFML Rectangle Shape transparency
 	* Menu/Screen Layouts
 	* Menu Event Handling
 
 Consolidate
-	* Move everything from tetris into game.run()
 	* Break text into appropriate GameStates
 	
 Documentation
-	
-Git this shit
-
-Did this git shit get fucked?

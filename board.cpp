@@ -147,8 +147,6 @@ int Board::clearRows(int row)
 		}
 	}
 	
-	// log_info("And it should clear %d total rows", total_rows);
-	
 	for (int clear=row; clear>(-1+total_rows); clear--) {
 		int copy = (clear - total_rows);
 		for (int col=0; col<BOARD_WIDTH; col++) {

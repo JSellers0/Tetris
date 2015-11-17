@@ -123,19 +123,14 @@ void GameStateMenu::handleInput()
 
 GameStateMenu::GameStateMenu(Game* game)
 {
-	
-	std::cout << "Menu pushed, setting game.";
 	this->game = game;
 	sf::Vector2f pos = sf::Vector2f(this->game->window.getSize());
 	this->menuView.setSize(pos);
 	pos *= 0.5f;
 	this->menuView.setCenter(pos);
 	
-	std::cout << "Initializing guiSystem.";
 	Gui gui = Gui(sf::Vector2f(192,32), 4, false, game->stylesheets.at("button"), {std::make_pair("Load Game", "load_game")} );
 	this->guiSystem.insert(std::make_pair("menu", gui));
-	
-	std::cout << "guiSystem Initialized.  Setting locations.";
 			
 	this->guiSystem.at("menu").setPosition(pos);
 	this->guiSystem.at("menu").setOrigin(96,32*1/2);

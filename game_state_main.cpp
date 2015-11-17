@@ -88,10 +88,10 @@ GameStateMain::GameStateMain(Game* game)
 {
 	this->game = game;
 	game->window.setTitle("Tetris");
-	sf::Vector2f pos = sf::Vector2f(this->game->window.getSize());
-	this->gameView.setSize(pos);
+	sf::Vector2f pos = sf::Vector2f(game->window.getSize());
+	gameView.setSize(pos);
 	pos *= 0.5f;
-	this->gameView.setCenter(pos);
+	gameView.setCenter(pos);
 	
 	game->run();
 }

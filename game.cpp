@@ -37,12 +37,12 @@
 
 Game::Game()
 {
-	this->loadTextures();
+	loadTextures();
 	
-	this->window.create(sf::VideoMode(800,600), "Tetris via SFML");
-	this->window.setFramerateLimit(60);
+	window.create(sf::VideoMode(800,600), "Tetris via SFML");
+	window.setFramerateLimit(60);
 	
-	this->background.setTexture(this->texmgr.getRef("background"));
+	background.setTexture(texmgr.getRef("background"));
 	loadFonts();
 	loadStyleSheets();
 	
@@ -51,14 +51,57 @@ Game::Game()
 	setVectors();
 	setOrder('n');
 	setOrder('c');
-	this->drop_decrement = .5;
-	this->drop_rate = CLOCKS_PER_SEC * .35;
+	initializePieces();
+	drop_decrement = .5;
+	drop_rate = CLOCKS_PER_SEC * .35;
 	
 }
 
 Game::~Game()
 {
 	while(!this->states.empty()) popState();
+}
+
+void Game::run()
+{	
+	this->window.clear(sf::Color(160,160,160));
+	//this->drawPanels();
+	//this->drawPreview();
+	
+	this->clock.restart();
+	
+	while(this->window.isOpen())
+	{
+		//float dt = elapsed.asSeconds();
+		handleInput();
+		/*
+		this->current_time = this->clock.restart();
+		if (current_time.asSeconds() > this->drop_rate)
+		{
+			if(this->checkDown()) this->piece.moveDown();
+		}
+		*/
+		if (not this->board.getCanDrop())
+		{
+			this->board.logPiece(this->piece);
+			this->piece.reset();
+			int clear = this->board.checkRows();
+			if (clear)
+			{
+				int lines = this->board.clearRows(clear);
+				if (this->text.update(lines)) this->levelUp();
+				
+				this->drawPanels();
+			}
+			
+			this->updatePieces();
+			this->drawPreview();
+			
+			bool lost = checkLose();
+			if (!lost) this->board.setCanDrop(true);
+		}
+		this->draw();
+	}
 }
 
 int Game::levelUp()
@@ -142,90 +185,20 @@ void Game::initializeBackgrounds()
 	this->hidden_rows.setPosition(sf::Vector2f(X_OFFSET, Y_OFFSET));
 	this->hidden_rows.setSize(sf::Vector2f((BOARD_WIDTH * BLOCK_SIZE), (BLANK_ROWS * BLOCK_SIZE)));
 	
-	this->left_panel.setFillColor(sf::Color(160, 160, 160));
-	this->left_panel.setPosition(sf::Vector2f(100, 75));
+	this->left_panel.setFillColor(sf::Color(161, 212, 144));
+	this->left_panel.setPosition(sf::Vector2f(64, 75));
 	this->left_panel.setSize(sf::Vector2f(200, BOARD_HEIGHT * BLOCK_SIZE));
 	
-	this->right_panel.setFillColor(sf::Color(160, 160, 160));
+	this->right_panel.setFillColor(sf::Color(195, 144, 212));
 	this->right_panel.setPosition(sf::Vector2f(600, 75));
-	this->right_panel.setSize(sf::Vector2f(200, BOARD_HEIGHT * BLOCK_SIZE));
+	this->right_panel.setSize(sf::Vector2f(175, BOARD_HEIGHT * BLOCK_SIZE));
 	
 	this->piece_preview.setFillColor(sf::Color::Black);
 	this->piece_preview.setPosition(sf::Vector2f(575,110));
 	this->piece_preview.setSize(sf::Vector2f(175, 400));
 }
 
-bool Game::checkDown()
-{
-	for (int block=0; block<4; block++) {
-		int row = this->piece.getBlockRow(block) + 1;
-		
-		if (row == BOARD_HEIGHT) {
-			this->board.setCanDrop(false);
-			return false;
-		} else if (this->board.getCell(row, this->piece.getBlockCol(block)) != 'n') {
-			this->board.setCanDrop(false);
-			return false;
-		}
-	}
-	return true;
-}
 
-bool Game::checkLeft()
-{
-	for (int block=0; block<4; block++) {
-		int col = this->piece.getBlockCol(block) - 1;
-		
-		if (col < 0) {
-			return false;
-		} else if (this->board.getCell(this->piece.getBlockRow(block),col) != 'n') {
-			return false;
-		}
-	}
-	return true;
-}
-
-bool Game::checkRight()
-{
-	for (int block=0; block<4; block++) {
-		int col = this->piece.getBlockCol(block) + 1;
-		
-		if (col == BOARD_WIDTH) {
-			return false;
-		} else if (this->board.getCell(this->piece.getBlockRow(block), col) != 'n') {
-			return false;
-		}
-	}
-	return true;
-}
-
-int Game::edgeCheck()
-{
-	for (int block=0; block<4; block++) {
-		int col = this->piece.getBlockCol(block);
-		if (col < 0) {
-			return -1;
-		} else if (col >= BOARD_WIDTH) {
-			return 1;
-		}
-	}
-}
-
-bool Game::checkLose()
-{
-	int n_count = BOARD_WIDTH;
-	for (int col=0; col<BOARD_WIDTH; col++) {
-		if (this->board.getCell(1, col) != 'n') {
-			n_count--;
-		}
-	}
-	
-	if (n_count < BOARD_WIDTH) {
-		return true;
-	} else {
-		return false;
-	}
-}
 
 void Game::handleInput()
 {
@@ -350,52 +323,6 @@ void Game::setPieceList()
 	this->piece_list[6].setType('I');
 }
 
-void Game::run()
-{
-	initializePieces();
-	
-	this->window.clear(sf::Color(160,160,160));
-	this->drawPanels();
-	this->drawPreview();
-	
-	this->clock.restart();
-	
-	while(this->window.isOpen())
-	{
-		//float dt = elapsed.asSeconds();
-		handleInput();
-		/*
-		this->current_time = this->clock.restart();
-		if (current_time.asSeconds() > this->drop_rate)
-		{
-			if(this->checkDown()) this->piece.moveDown();
-		}
-		*/	
-		if (not this->board.getCanDrop())
-		{
-			this->board.logPiece(this->piece);
-			this->piece.reset();
-			int clear = this->board.checkRows();
-			if (clear)
-			{
-				int lines = this->board.clearRows(clear);
-				if (this->text.update(lines)) this->levelUp();
-				
-				this->drawPanels();
-			}
-			
-			piece_index++;
-			
-			updatePieces(piece_index);
-			this->drawPreview();
-			
-			bool lost = checkLose();
-			if (!lost) this->board.setCanDrop(true);
-		}
-		this->draw();
-	}
-}
-
 void Game::pushState(GameState* state)
 {
 	this->states.push(state);
@@ -419,6 +346,7 @@ GameState* Game::peekState()
 
 void Game::initializePieces()
 {
+	this->piece_index = 0;
 	this->piece.setType(this->piece_list[getPieceIndex(this->piece_index, 'c')].getType());
 	this->preview_one.setType(this->piece_list[getPieceIndex(this->piece_index + 1, 'c')].getType(), 1);
 	this->preview_two.setType(this->piece_list[getPieceIndex(this->piece_index + 2, 'c')].getType(), 2);
@@ -453,9 +381,10 @@ void Game::loadStyleSheets()
 	return;
 }
 
-void Game::updatePieces(int index)
+void Game::updatePieces()
 {
-	if (index == 4)
+	this->piece_index += 1;
+	if (this->piece_index == 4)
 	{
 		this->preview_one.setType(this->piece_list[
 			getPieceIndex(5, 'c')].getType(), 1);
@@ -464,7 +393,7 @@ void Game::updatePieces(int index)
 		this->preview_thr.setType(this->piece_list[
 			getPieceIndex(0, 'n')].getType(), 3);
 	} 
-	else if (index == 5)
+	else if (this->piece_index == 5)
 	{
 		this->preview_one.setType(this->piece_list[
 			getPieceIndex(6, 'c')].getType(), 1);
@@ -473,7 +402,7 @@ void Game::updatePieces(int index)
 		this->preview_thr.setType(this->piece_list[
 			getPieceIndex(1, 'n')].getType(), 3);
 	}
-	else if (index == 6)
+	else if (this->piece_index == 6)
 	{
 		this->preview_one.setType(this->piece_list[
 			getPieceIndex(0, 'n')].getType(), 1);
@@ -482,7 +411,7 @@ void Game::updatePieces(int index)
 		this->preview_thr.setType(this->piece_list[
 			getPieceIndex(2, 'n')].getType(), 3);
 	}
-	else if (index == 7)
+	else if (this->piece_index == 7)
 	{
 		this->setOrder('c');
 		this->setOrder('n');
@@ -497,12 +426,85 @@ void Game::updatePieces(int index)
 	else
 	{
 		this->preview_one.setType(this->piece_list[
-			getPieceIndex(index + 1, 'c')].getType(), 1);
+			getPieceIndex(this->piece_index + 1, 'c')].getType(), 1);
 		this->preview_two.setType(this->piece_list[
-			getPieceIndex(index + 2, 'c')].getType(), 2);
+			getPieceIndex(this->piece_index + 2, 'c')].getType(), 2);
 		this->preview_thr.setType(this->piece_list[
-			getPieceIndex(index + 3, 'c')].getType(), 3);
+			getPieceIndex(this->piece_index + 3, 'c')].getType(), 3);
 	}
 	
-	this->piece.setType(this->piece_list[piece_index].getType());
+	this->piece.setType(this->piece_list[getPieceIndex(this->piece_index, 'c')].getType());
+	
+}
+
+bool Game::checkDown()
+{
+	for (int block = 0; block < 4; block++) {
+		int row = this->piece.getBlockRow(block) + 1;
+		
+		if (row == BOARD_HEIGHT) {
+			this->board.setCanDrop(false);
+			return false;
+		} else if (this->board.getCell(row, this->piece.getBlockCol(block)) != 'n') {
+			this->board.setCanDrop(false);
+			return false;
+		}
+	}
+	return true;
+}
+
+bool Game::checkLeft()
+{
+	for (int block = 0; block < 4; block++) {
+		int col = this->piece.getBlockCol(block) - 1;
+		
+		if (col < 0) {
+			return false;
+		} else if (this->board.getCell(this->piece.getBlockRow(block),col) != 'n') {
+			return false;
+		}
+	}
+	return true;
+}
+
+bool Game::checkRight()
+{
+	for (int block = 0; block < 4; block++) {
+		int col = this->piece.getBlockCol(block) + 1;
+		
+		if (col == BOARD_WIDTH) {
+			return false;
+		} else if (this->board.getCell(this->piece.getBlockRow(block), col) != 'n') {
+			return false;
+		}
+	}
+	return true;
+}
+
+int Game::edgeCheck()
+{
+	for (int block = 0; block < 4; block++) {
+		int col = this->piece.getBlockCol(block);
+		if (col < 0) {
+			return -1;
+		} else if (col >= BOARD_WIDTH) {
+			return 1;
+		}
+	}
+}
+
+bool Game::checkLose()
+{
+	int n_count = BOARD_WIDTH;
+	for (int col = 0; col < BOARD_WIDTH; col++) {
+		if (this->board.getCell(1, col) != 'n') {
+			n_count--;
+		}
+	}
+	
+	if (n_count < BOARD_WIDTH) {
+		return true;
+	} else {
+		return false;
+	}
 }
