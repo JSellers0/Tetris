@@ -30,7 +30,7 @@
  #include "game_state.hpp"
  #include "gui.hpp"
  
- void GameStateMenu::loadGame()
+ void GameStateMenu::newGame()
  {
 	 this->game->pushState(new GameStateMain(this->game));
 	 
@@ -40,7 +40,7 @@
  void GameStateMenu::draw(const float dt)
  {
 	 this->game->window.setView(this->menuView);
-	 
+	 this->game->background.setTexture(this->game->texmgr.getRef("menu_background"));
 	 this->game->window.clear(sf::Color::Black);
 	 this->game->window.draw(this->game->background);
 	 
@@ -98,9 +98,9 @@ void GameStateMenu::handleInput()
 				{
 					std::string msg = this->guiSystem.at("menu").activate(mousePos);
 					
-					if(msg == "load_game")
+					if(msg == "new_game")
 					{
-						this->loadGame();
+						this->newGame();
 					}
 				}
 				break;
@@ -110,7 +110,7 @@ void GameStateMenu::handleInput()
 			case sf::Event::KeyPressed:
 			{
 				if(event.key.code == sf::Keyboard::Escape) this->game->window.close();
-				else if(event.key.code == sf::Keyboard::Space) this->loadGame();
+				else if(event.key.code == sf::Keyboard::Space) this->newGame();
 				break;
 			}
 			default: break;
@@ -129,8 +129,14 @@ GameStateMenu::GameStateMenu(Game* game)
 	pos *= 0.5f;
 	this->menuView.setCenter(pos);
 	
-	Gui gui = Gui(sf::Vector2f(192,32), 4, false, game->stylesheets.at("button"), {std::make_pair("Load Game", "load_game")} );
+	Gui gui = Gui(sf::Vector2f(192,32), 4, false, game->stylesheets.at("button"), 
+	{
+		std::make_pair("New Game", "new_game"), 
+		std::make_pair("Options", "options")
+	} );
 	this->guiSystem.insert(std::make_pair("menu", gui));
+	
+	
 			
 	this->guiSystem.at("menu").setPosition(pos);
 	this->guiSystem.at("menu").setOrigin(96,32*1/2);

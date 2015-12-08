@@ -24,6 +24,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <SFML/System.hpp>
+#include <SFML/Graphics.hpp>
 
 
 #include "game.hpp"
@@ -53,7 +54,8 @@ Game::Game()
 	setOrder('c');
 	initializePieces();
 	drop_decrement = .5;
-	drop_rate = CLOCKS_PER_SEC * .35;
+	this->drop_rate = 2;
+	this->dt = 0;
 	
 }
 
@@ -65,22 +67,24 @@ Game::~Game()
 void Game::run()
 {	
 	this->window.clear(sf::Color(160,160,160));
-	//this->drawPanels();
-	//this->drawPreview();
-	
-	this->clock.restart();
 	
 	while(this->window.isOpen())
 	{
+		this->clock.restart();
+		
 		//float dt = elapsed.asSeconds();
 		handleInput();
-		/*
-		this->current_time = this->clock.restart();
-		if (current_time.asSeconds() > this->drop_rate)
+		
+		this->elapsed = this->clock.getElapsedTime();
+		this->dt = this->elapsed.asSeconds();
+		log_info("drop: %d", this->drop_rate);
+		log_info("elapsed: %d", dt);
+		
+		if (this->dt > this->drop_rate)
 		{
 			if(this->checkDown()) this->piece.moveDown();
 		}
-		*/
+		
 		if (not this->board.getCanDrop())
 		{
 			this->board.logPiece(this->piece);
@@ -112,7 +116,7 @@ int Game::levelUp()
 }
 
 void Game::draw()
-{
+{	
 	//clear the board area
 	this->window.draw(this->board_background);
 	//draw any set blocks
@@ -198,8 +202,6 @@ void Game::initializeBackgrounds()
 	this->piece_preview.setSize(sf::Vector2f(175, 400));
 }
 
-
-
 void Game::handleInput()
 {
 	sf::Event event;
@@ -254,17 +256,12 @@ void Game::handleInput()
 								case 1:
 									this->piece.moveLeft();
 									break;
-							}
-						}
-					}
-				}
+				}}}}
 				break;
 			}
 				
 			default: break;
-		}
-	}
-}
+}}}
 
 void Game::dropPiece(Board* board, Piece* piece)
 {
@@ -356,6 +353,7 @@ void Game::initializePieces()
 void Game::loadTextures()
 {
 	this->texmgr.loadTexture("background", "media/background.png");
+	this->texmgr.loadTexture("menu_background", "media/menu.png");
 }
 
 void Game::loadFonts()

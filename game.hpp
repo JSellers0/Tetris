@@ -26,6 +26,7 @@
 
 #include <vector>
 #include <SFML/Graphics.hpp>
+#include <SFML/System.hpp>
 #include <ctime>
 #include <stack>
 
@@ -72,11 +73,13 @@ class Game
 		std::vector<int> current_order;
 		std::vector<int> next_order;
 		
-		int drop_rate;
+		float drop_rate;
 		int drop_decrement;
 		int piece_index;
 		
 		sf::Clock clock;
+		sf::Time elapsed;
+		float dt;
 		clock_t start_time;
 		clock_t current_time;
 		

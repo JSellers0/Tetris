@@ -39,7 +39,7 @@ class GameStateMenu : public GameState
 	
 	std::map<std::string, Gui> guiSystem;
 	
-	void loadGame();
+	void newGame();
 	
 	public:
 	
