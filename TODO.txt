@@ -1,7 +1,6 @@
 /* 
  * Copyright 2015 Jeffrey L. Sellers
-*/
-
+ */
 /* This file is part of Jeff's C++ tetris clone.
 
     Jeff's C++ tetris clone is free software: you can redistribute it and/or modify
@@ -17,32 +16,31 @@
     You should have received a copy of the GNU General Public License
     along with Jeff's C++ tetris clone.  If not, see <http://www.gnu.org/licenses/>.
 */ 
-
-Bugs
-	* SFML Time/Clock and drop system F-ed and confusing.
+==Bugs
+* SFML Time/Clock and drop system F-ed and confusing.
 	
-Cleanup
-	* Text vs texture manager in anticipation of separate screen needs
-	* Game is getting pretty long and unweildly, perhaps we can separate
-		some functionality into game_state_main.
+==Cleanup
+* Text vs texture manager in anticipation of separate screen needs
+* Game is getting pretty long and unweildly
+* Look at City Builder Game Loop, emulate state usage for Tetris.  This should fix pausing issue.
 
-Level parameters
-	* drop speed
-	* Background images
+==Level parameters	
+* drop speed
+* Background images
 
-Flash any line clear
-Special flash for 4 line clear
+==Features
+* Flash any line clear
+* Special flash for 4 line clear
+* Rotate Right
 
-Rotate Right
+==GameStates
+* Lose 
+* Game Over 	
+* SFML Rectangle Shape transparency
+* Menu/Screen Layouts
+		
+==Documentation
+* Needed
 
-GameState Lose
-
-Pause, and Game Over Screens
-	* SFML Rectangle Shape transparency
-	* Menu/Screen Layouts
-	* Menu Event Handling
-
-Consolidate
-	* Break text into appropriate GameStates
-	
-Documentation
+==Distribution
+* Look into CMake

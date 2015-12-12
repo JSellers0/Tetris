@@ -36,14 +36,57 @@
  
  void GameStateMain::draw(const float dt)
  {
-	 this->game->window.clear(sf::Color::Black);
-	 this->game->window.draw(this->game->background);
-	 
+	 this->game->window.clear(sf::Color(160,160,160));
+	 //clear the board area
+	 this->game->window.draw(this->game->board_background);
+	 //draw any set blocks
+	 for (int row=0; row<BOARD_HEIGHT; row++) {
+	 	 for (int col=0; col<BOARD_WIDTH; col++) {
+			 sf::RectangleShape block;
+			 block.setSize(sf::Vector2f(BLOCK_SIZE, BLOCK_SIZE));
+			 block.setOutlineThickness(OUTLINE);
+			 block.setOutlineColor(sf::Color::Black);
+			 block.setFillColor(this->game->board.getMapColor(this->game->board.getCell(row, col)));
+			 block.setPosition(this->game->piece.convertBoardtoPixel(row, col));
+			 this->game->window.draw(block);
+		 }
+	 }
+	 //draw the piece
+	 for (int block=0; block<4; block++) {
+		 this->game->window.draw(this->game->piece.getBlock(block));
+	 }
+	
+	 this->game->window.draw(this->game->hidden_rows);
+	
+	 //draw the panels
+	 this->game->drawPanels();
+	
+	 //draw preview pieces
+	 this->game->drawPreview();
 	 return;
 }
 
 void GameStateMain::update(const float dt)
 {
+	if(not this->game->board.getCanDrop())
+	{
+		this->game->board.logPiece(this->game->piece);
+		this->game->piece.reset();
+		int clear = this->game->board.checkRows();
+		if (clear) {
+			int lines = this->game->board.clearRows(clear);
+			if (this->game->text.update(lines)) {
+				this->game->levelUp();
+			}
+			this->game->drawPanels();
+		}
+		
+		this->game->updatePieces();
+		this->game->drawPreview();
+		
+		bool lost = this->game->checkLose();
+		if (!lost) this->game->board.setCanDrop(true);
+	}
 	return;
 }
 
@@ -74,13 +117,54 @@ void GameStateMain::handleInput()
 			/* Keyboard Events */
 			case sf::Event::KeyPressed:
 			{
-				if(event.key.code == sf::Keyboard::P) this->pauseGame();
+				if(event.key.code == sf::Keyboard::Escape) {
+					this->game->window.close();
+				}else if(event.key.code == sf::Keyboard::P) {
+					this->pauseGame();
+				}else if(event.key.code == sf::Keyboard::Down) {
+					if(this->game->checkDown()) {
+						this->game->piece.moveDown();
+					}
+				}else if(event.key.code == sf::Keyboard::Left) {
+					if(this->game->checkLeft()) {
+						this->game->piece.moveLeft();
+					}
+				}else if(event.key.code == sf::Keyboard::Right) {
+					if(this->game->checkRight()) {
+						this->game->piece.moveRight();
+					}
+				}else if(event.key.code == sf::Keyboard::Space) {
+					if(this->game->checkDown()) {
+						this->game->piece.rotateLeft();
+						int check = this->game->edgeCheck();
+						switch(check) {
+							case -1:
+								this->game->piece.moveRight();
+								break;
+							case 1:
+								this->game->piece.moveLeft();
+								break;
+						}
+						//Double check for I piece.  I imagine a better
+						//way to handle this exists.
+						if (this->game->piece.getType() == 'I') {
+							check == this->game->edgeCheck();
+							switch(check) {
+								case -1:
+									this->game->piece.moveRight();
+									break;
+								case 1:
+									this->game->piece.moveLeft();
+									break;
+							}
+						}
+					}
+				}
 				break;
 			}
   			default: break;
 		}
 	}
-	
 	return;
 }
 
@@ -92,6 +176,4 @@ GameStateMain::GameStateMain(Game* game)
 	gameView.setSize(pos);
 	pos *= 0.5f;
 	gameView.setCenter(pos);
-	
-	game->run();
 }

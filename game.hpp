@@ -42,7 +42,9 @@ class GameState;
 class Game
 {
 	// Private Methods
-	private:
+	//private:
+	// I know this is bad form, but it will work.  I'll fix it later, I promise.
+	public:
 		/** Initializes the following for drawing the main game screen:
 		  * board_background
 		  * hidden_rows
@@ -67,8 +69,10 @@ class Game
 		
 		void updatePieces();
 		
+		void pauseGame();
+		
 	// Private Members
-	private:	
+	//private:	
 	
 		std::vector<int> current_order;
 		std::vector<int> next_order;
@@ -122,6 +126,8 @@ class Game
 		void popState();
 		void changeState(GameState* state);
 		GameState* peekState();
+		
+		void gameloop();
 		
 		/** Returns the availability of space below the piece.  Currently
 		  * uses pointer parameters because of not having game.run() set

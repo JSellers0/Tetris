@@ -20,15 +20,12 @@
 
 //This file uses code from Copyright (c) 2014 Daniel Mansfield under the MIT License (MIT)
 
-#include <algorithm>
-#include <cstdlib>
-#include <iostream>
 #include <SFML/System.hpp>
 #include <SFML/Graphics.hpp>
 
-
 #include "game.hpp"
 #include "game_state.hpp"
+#include "game_state_pause.hpp"
 #include "texture_manager.hpp"
 
 #include "board.hpp"
@@ -64,6 +61,24 @@ Game::~Game()
 	while(!this->states.empty()) popState();
 }
 
+void Game::gameloop()
+{
+	sf::Clock clock;
+	
+	while(this->window.isOpen())
+	{
+		sf::Time elapsed = clock.restart();
+		float dt = elapsed.asSeconds();
+		
+		if(peekState() == nullptr) continue;
+		peekState()->handleInput();
+		peekState()->update(dt);
+		this->window.clear(sf::Color(160,160,160));
+		peekState()->draw(dt);
+		this->window.display();
+	}
+}
+
 void Game::run()
 {	
 	this->window.clear(sf::Color(160,160,160));
@@ -71,9 +86,6 @@ void Game::run()
 	while(this->window.isOpen())
 	{
 		this->clock.restart();
-		
-		//float dt = elapsed.asSeconds();
-		handleInput();
 		
 		this->elapsed = this->clock.getElapsedTime();
 		this->dt = this->elapsed.asSeconds();
@@ -179,8 +191,7 @@ void Game::drawPanels()
 }
 
 void Game::initializeBackgrounds()
-{
-	
+{	
 	this->board_background.setFillColor(sf::Color::Black);
 	this->board_background.setPosition(sf::Vector2f(X_OFFSET, Y_OFFSET));
 	this->board_background.setSize(sf::Vector2f((BOARD_WIDTH * BLOCK_SIZE), (BOARD_HEIGHT * BLOCK_SIZE)));
@@ -201,67 +212,6 @@ void Game::initializeBackgrounds()
 	this->piece_preview.setPosition(sf::Vector2f(575,110));
 	this->piece_preview.setSize(sf::Vector2f(175, 400));
 }
-
-void Game::handleInput()
-{
-	sf::Event event;
-	
-	while(this->window.pollEvent(event))
-	{	
-		switch(event.type)
-		{
-			case sf::Event::Closed:
-			{
-				this->window.close();
-				break;
-			}	
-			case sf::Event::KeyPressed:
-			{
-				if (event.key.code == sf::Keyboard::Escape) {
-					this->window.close();
-				} else if (event.key.code == sf::Keyboard::P) {
-					this->board.printBoard();
-				} else if (event.key.code == sf::Keyboard::Down) {
-					if (checkDown()) {
-						this->piece.moveDown();
-					}
-				} else if (event.key.code == sf::Keyboard::Left) {
-					if (checkLeft()) {
-						this->piece.moveLeft();
-					}
-				} else if (event.key.code == sf::Keyboard::Right) {
-					if (checkRight()) {
-						this->piece.moveRight();
-					}
-				} else if (event.key.code == sf::Keyboard::Space) {
-					if (checkDown()) {
-						this->piece.rotateLeft();
-						int check = edgeCheck();
-						switch(check) {
-							case -1:
-								this->piece.moveRight();
-								break;
-							case 1:
-								this->piece.moveLeft();
-								break;
-						}
-						//Double check for I piece.  I imagine a better
-						//way to handle this exists.
-						if (this->piece.getType() == 'I') {
-							check == edgeCheck();
-							switch(check) {
-								case -1:
-									this->piece.moveRight();
-									break;
-								case 1:
-									this->piece.moveLeft();
-									break;
-				}}}}
-				break;
-			}
-				
-			default: break;
-}}}
 
 void Game::dropPiece(Board* board, Piece* piece)
 {
@@ -505,4 +455,11 @@ bool Game::checkLose()
 	} else {
 		return false;
 	}
+}
+
+void Game::pauseGame()
+{
+	pushState(new GameStatePause(this));
+	
+	return;
 }

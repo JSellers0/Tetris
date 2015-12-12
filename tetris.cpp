@@ -32,24 +32,10 @@
 int main()
 {
 	Game game;
-	game.window.setTitle("Tetris Main Menu");
+
 	game.pushState(new GameStateMenu(&game));
+	game.gameloop();
 	
 	return 0;
 	
 }
-
-/*
-void old()
-{
-	
-	clock_t start_time = clock();
-	clock_t current_time;
-		
-		if (clock() - start_time > game.getDropRate()) {
-			if (game.checkDown(board, piece)) {
-				piece->moveDown();
-			}
-			start_time = clock();
-		}
-*/

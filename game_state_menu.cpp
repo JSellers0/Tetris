@@ -141,11 +141,4 @@ GameStateMenu::GameStateMenu(Game* game)
 	this->guiSystem.at("menu").setPosition(pos);
 	this->guiSystem.at("menu").setOrigin(96,32*1/2);
 	this->guiSystem.at("menu").show();
-	
-	while(game->window.isOpen())
-	{
-		handleInput();
-		draw(0);
-	}
-	
 }
