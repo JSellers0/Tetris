@@ -36,6 +36,8 @@ class GameStateMain : public GameState
 	
 	void pauseGame();
 	
+	bool initialize;
+	
 	public:
 	
 	virtual void draw(const float dt);

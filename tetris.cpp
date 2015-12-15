@@ -28,11 +28,14 @@
 
 #include "game.hpp"
 #include "game_state_menu.hpp"
+#include "dbg.h"
 
 int main()
 {
+	log_info("Create game.");
 	Game game;
 
+	log_info("create menu");
 	game.pushState(new GameStateMenu(&game));
 	game.gameloop();
 	

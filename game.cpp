@@ -34,17 +34,16 @@
 #include "dbg.h"
 
 Game::Game()
-{
-	loadTextures();
-	
+{	
 	window.create(sf::VideoMode(800,600), "Tetris via SFML");
 	window.setFramerateLimit(60);
-	
-	background.setTexture(texmgr.getRef("background"));
+
 	loadFonts();
 	loadStyleSheets();
+	loadTextures();	
 	
 	initializeBackgrounds();
+	
 	setPieceList();
 	setVectors();
 	setOrder('n');
@@ -52,8 +51,7 @@ Game::Game()
 	initializePieces();
 	drop_decrement = .5;
 	this->drop_rate = 2;
-	this->dt = 0;
-	
+	log_info("everything initialized");
 }
 
 Game::~Game()
@@ -69,54 +67,13 @@ void Game::gameloop()
 	{
 		sf::Time elapsed = clock.restart();
 		float dt = elapsed.asSeconds();
+		//log_info("elapsed is %d", dt);
 		
 		if(peekState() == nullptr) continue;
 		peekState()->handleInput();
 		peekState()->update(dt);
-		this->window.clear(sf::Color(160,160,160));
 		peekState()->draw(dt);
 		this->window.display();
-	}
-}
-
-void Game::run()
-{	
-	this->window.clear(sf::Color(160,160,160));
-	
-	while(this->window.isOpen())
-	{
-		this->clock.restart();
-		
-		this->elapsed = this->clock.getElapsedTime();
-		this->dt = this->elapsed.asSeconds();
-		log_info("drop: %d", this->drop_rate);
-		log_info("elapsed: %d", dt);
-		
-		if (this->dt > this->drop_rate)
-		{
-			if(this->checkDown()) this->piece.moveDown();
-		}
-		
-		if (not this->board.getCanDrop())
-		{
-			this->board.logPiece(this->piece);
-			this->piece.reset();
-			int clear = this->board.checkRows();
-			if (clear)
-			{
-				int lines = this->board.clearRows(clear);
-				if (this->text.update(lines)) this->levelUp();
-				
-				this->drawPanels();
-			}
-			
-			this->updatePieces();
-			this->drawPreview();
-			
-			bool lost = checkLose();
-			if (!lost) this->board.setCanDrop(true);
-		}
-		this->draw();
 	}
 }
 
@@ -125,38 +82,6 @@ int Game::levelUp()
 	this->drop_rate -= this->drop_decrement;
 	//Will eventually be used to change the level background, piece fall speed, etc.
 	return 1;
-}
-
-void Game::draw()
-{	
-	//clear the board area
-	this->window.draw(this->board_background);
-	//draw any set blocks
-	for (int row=0; row<BOARD_HEIGHT; row++) {
-		for (int col=0; col<BOARD_WIDTH; col++) {
-			sf::RectangleShape block;
-			block.setSize(sf::Vector2f(BLOCK_SIZE, BLOCK_SIZE));
-			block.setOutlineThickness(OUTLINE);
-			block.setOutlineColor(sf::Color::Black);
-			block.setFillColor(this->board.getMapColor(this->board.getCell(row, col)));
-			block.setPosition(this->piece.convertBoardtoPixel(row, col));
-			this->window.draw(block);
-		}
-	}
-	//draw the piece
-	for (int block=0; block<4; block++) {
-		this->window.draw(this->piece.getBlock(block));
-	}
-	//draw the rectangle that hides the hidden rows
-	this->window.draw(this->hidden_rows);
-	
-	//draw the panels
-	drawPanels();
-	
-	//draw preview pieces
-	drawPreview();
-	
-	this->window.display();
 }
 
 void Game::drawPreview()
@@ -171,9 +96,8 @@ void Game::drawPreview()
 	this->window.display();
 }
 
-void Game::drawPanels()
+void Game::drawLeftPanel()
 {
-	//Left Panel
 	this->window.draw(this->left_panel);
 	this->window.draw(text.lvl_label);
 	this->window.draw(text.lvl_text);
@@ -183,11 +107,21 @@ void Game::drawPanels()
 	this->window.draw(text.lc_text);
 	this->window.draw(text.lr_label);
 	this->window.draw(text.lr_text);
-	
-	//Right Panel
+}
+
+void Game::drawRightPanel()
+{
 	this->window.draw(this->right_panel);
 	this->window.draw(text.next_label);
 	this->window.draw(this->piece_preview);
+}
+
+void Game::drawPanels()
+{
+	//Left Panel - I would like to eventually separate these out.
+	this->drawLeftPanel();
+	//Right Panel - This is a start at least.
+	this->drawRightPanel();
 }
 
 void Game::initializeBackgrounds()
@@ -211,13 +145,15 @@ void Game::initializeBackgrounds()
 	this->piece_preview.setFillColor(sf::Color::Black);
 	this->piece_preview.setPosition(sf::Vector2f(575,110));
 	this->piece_preview.setSize(sf::Vector2f(175, 400));
+	
+	this->background.setTexture(texmgr.getRef("background"));
 }
 
-void Game::dropPiece(Board* board, Piece* piece)
+void Game::dropPiece()
 {
-	while (board->getCanDrop()) {
+	while (this->board.getCanDrop()) {
 		if (this->checkDown()) {
-			piece->moveDown();
+			this->piece.moveDown();
 		}
 	}
 }
@@ -455,11 +391,4 @@ bool Game::checkLose()
 	} else {
 		return false;
 	}
-}
-
-void Game::pauseGame()
-{
-	pushState(new GameStatePause(this));
-	
-	return;
 }

@@ -29,6 +29,7 @@
  #include "game_state_main.hpp"
  #include "game_state.hpp"
  #include "gui.hpp"
+ #include "dbg.h"
  
  void GameStateMenu::newGame()
  {
@@ -39,8 +40,7 @@
  
  void GameStateMenu::draw(const float dt)
  {
-	 this->game->window.setView(this->menuView);
-	 this->game->background.setTexture(this->game->texmgr.getRef("menu_background"));
+	 
 	 this->game->window.clear(sf::Color::Black);
 	 this->game->window.draw(this->game->background);
 	 
@@ -59,7 +59,6 @@ void GameStateMenu::update(const float dt)
 void GameStateMenu::handleInput()
 {
 	sf::Event event;
-	
 	sf::Vector2f mousePos = this->game->window.mapPixelToCoords(
 		sf::Mouse::getPosition(this->game->window), this->menuView);
 	
@@ -90,7 +89,6 @@ void GameStateMenu::handleInput()
 				this->guiSystem.at("menu").highlight(this->guiSystem.at("menu").getEntry(mousePos));
 				break;
 			}
-			
 			/* Click on menu items. */
 			case sf::Event::MouseButtonPressed:
 			{
@@ -104,8 +102,7 @@ void GameStateMenu::handleInput()
 					}
 				}
 				break;
-			}
-			
+			}		
 			/* Key Events */
 			case sf::Event::KeyPressed:
 			{
@@ -114,15 +111,14 @@ void GameStateMenu::handleInput()
 				break;
 			}
 			default: break;
-			
 		}
 	}
-	
 	return;
 }
 
 GameStateMenu::GameStateMenu(Game* game)
 {
+	log_info("Initialize GameStateMenu");
 	this->game = game;
 	sf::Vector2f pos = sf::Vector2f(this->game->window.getSize());
 	this->menuView.setSize(pos);
@@ -141,4 +137,7 @@ GameStateMenu::GameStateMenu(Game* game)
 	this->guiSystem.at("menu").setPosition(pos);
 	this->guiSystem.at("menu").setOrigin(96,32*1/2);
 	this->guiSystem.at("menu").show();
+	
+	this->game->window.setView(this->menuView);
+	this->game->background.setTexture(this->game->texmgr.getRef("menu_background"));
 }

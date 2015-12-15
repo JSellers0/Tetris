@@ -24,10 +24,9 @@
 #ifndef GAME_HPP
 #define GAME_HPP
 
-#include <vector>
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
-#include <ctime>
+#include <vector>
 #include <stack>
 
 #include "texture_manager.hpp"
@@ -41,35 +40,30 @@ class GameState;
 
 class Game
 {
-	// Private Methods
-	//private:
+	private:
 	// I know this is bad form, but it will work.  I'll fix it later, I promise.
-	public:
+
 		/** Initializes the following for drawing the main game screen:
-		  * board_background
-		  * hidden_rows
-		  * left_panel
-		  * right_panel
-		  * piece_preview
+		  * board_background, hidden_rows, left_panel, right_panel, piece_preview
 		  */
 		void initializeBackgrounds();
 		
 		/** Initializes the vectors current_order and next_order to contain
 		  * 7 integers from 0 to 6.
-		  */
-		  
+		  */		  
 		void initializePieces();
 		void setVectors();
 		
 		void setPieceList();
+		void setOrder(char order);
 		
 		void loadTextures();
 		void loadStyleSheets();
 		void loadFonts();
 		
+	public:
 		void updatePieces();
-		
-		void pauseGame();
+
 		
 	// Private Members
 	//private:	
@@ -80,12 +74,6 @@ class Game
 		float drop_rate;
 		int drop_decrement;
 		int piece_index;
-		
-		sf::Clock clock;
-		sf::Time elapsed;
-		float dt;
-		clock_t start_time;
-		clock_t current_time;
 		
 		sf::RectangleShape board_background;
 		sf::RectangleShape left_panel;
@@ -129,41 +117,22 @@ class Game
 		
 		void gameloop();
 		
-		/** Returns the availability of space below the piece.  Currently
-		  * uses pointer parameters because of not having game.run() set
-		  * up.
-		  * 
-		  * @param *board The address of a board
-		  * @param *piece The address of a piece
+		/** Returns the availability of space below the piece.
 		  * @return true if there is space available below the piece otherwise false
 		  */ 
 		bool checkDown();
 		
 		/** Returns the availability of space to the left of the piece.  
-		  * Currently uses pointer parameters because of not having 
-		  * game.run() set up.
-		  * 
-		  * @param *board The address of a board
-		  * @param *piece The address of a piece
 		  * @return true if there is space available left of the piece otherwise false
 		  */
 		bool checkLeft();
 		
 		/** Returns the availability of space to the right of the piece.  
-		  * Currently uses pointer parameters because of not having 
-		  * game.run() set up.
-		  * 
-		  * @param *board The address of a board
-		  * @param *piece The address of a piece
 		  * @return true if there is space available right of the piece otherwise false
 		  */
 		bool checkRight();
 		
 		/** Checks for edge overlap following piece rotation.
-		  * Currently uses pointer parameters because of not having 
-		  * game.run() set up.
-		  * 
-		  * @param *piece The address of a piece
 		  * @return -1 if the piece is overlapping the left edge
 		  * @return 1 if the piece is overlapping the right edge
 		  */
@@ -173,29 +142,25 @@ class Game
 		  * This probably creates a bug wherein you can stack pieces all the
 		  * way on the left or right and cause game loss even though there
 		  * is space for a new piece to drop.  Will need to revise.
-		  * 
-		  * @param *board the address of a board
 		  * @return true if there is a piece in the top row already
 		  */
 		bool checkLose();
 		
-		void draw();
 		void drawPreview();
+		void drawLeftPanel();
+		void drawRightPanel();
 		void drawPanels();
 		void update(int);
-		void handleInput();
-		void dropPiece(Board* board, Piece* piece);
+		void dropPiece();
 		
 		int levelUp();
 		
-		void setOrder(char order);
+		
 		int getPieceIndex(int index, char vector);
 		
 		int getDropRate() {return drop_rate;}
 		
-		void run();
-		
-		
+		sf::Vector2f convertBoardtoPixel(int row, int col);
 		
 };
 #endif

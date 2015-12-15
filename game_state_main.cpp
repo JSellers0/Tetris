@@ -26,6 +26,7 @@
  #include "game_state.hpp"
  #include "game_state_main.hpp"
  #include "game_state_pause.hpp"
+ #include "dbg.h"
  
  void GameStateMain::pauseGame()
  {
@@ -36,33 +37,55 @@
  
  void GameStateMain::draw(const float dt)
  {
-	 this->game->window.clear(sf::Color(160,160,160));
-	 //clear the board area
-	 this->game->window.draw(this->game->board_background);
-	 //draw any set blocks
-	 for (int row=0; row<BOARD_HEIGHT; row++) {
-	 	 for (int col=0; col<BOARD_WIDTH; col++) {
-			 sf::RectangleShape block;
-			 block.setSize(sf::Vector2f(BLOCK_SIZE, BLOCK_SIZE));
-			 block.setOutlineThickness(OUTLINE);
-			 block.setOutlineColor(sf::Color::Black);
-			 block.setFillColor(this->game->board.getMapColor(this->game->board.getCell(row, col)));
-			 block.setPosition(this->game->piece.convertBoardtoPixel(row, col));
-			 this->game->window.draw(block);
-		 }
-	 }
-	 //draw the piece
-	 for (int block=0; block<4; block++) {
-		 this->game->window.draw(this->game->piece.getBlock(block));
-	 }
-	
-	 this->game->window.draw(this->game->hidden_rows);
-	
-	 //draw the panels
-	 this->game->drawPanels();
-	
-	 //draw preview pieces
-	 this->game->drawPreview();
+	if(this->initialize) {
+		this->game->window.clear(sf::Color(160,160,160));
+		//clear the board area
+		this->game->window.draw(this->game->board_background);
+		//draw any set blocks
+		for (int row=0; row<BOARD_HEIGHT; row++) {
+			for (int col=0; col<BOARD_WIDTH; col++) {
+				sf::RectangleShape block;
+				block.setSize(sf::Vector2f(BLOCK_SIZE, BLOCK_SIZE));
+				block.setOutlineThickness(OUTLINE);
+				block.setOutlineColor(sf::Color::Black);
+				block.setFillColor(this->game->board.getMapColor(this->game->board.getCell(row, col)));
+				block.setPosition(this->game->piece.convertBoardtoPixel(row, col));
+				this->game->window.draw(block);
+			}
+		}
+		//draw the piece
+		for (int block=0; block<4; block++) {
+			this->game->window.draw(this->game->piece.getBlock(block));
+		}
+		
+		this->game->window.draw(this->game->hidden_rows);
+		
+		//draw the panels
+		this->game->drawPanels();
+		
+		//draw preview pieces
+		this->game->drawPreview();
+		this->initialize = false;
+	} else if(!this->initialize) {
+		this->game->window.draw(this->game->board_background);
+		//draw any set blocks
+		for (int row=0; row<BOARD_HEIGHT; row++) {
+			for (int col=0; col<BOARD_WIDTH; col++) {
+				sf::RectangleShape block;
+				block.setSize(sf::Vector2f(BLOCK_SIZE, BLOCK_SIZE));
+				block.setOutlineThickness(OUTLINE);
+				block.setOutlineColor(sf::Color::Black);
+				block.setFillColor(this->game->board.getMapColor(this->game->board.getCell(row, col)));
+				block.setPosition(this->game->piece.convertBoardtoPixel(row, col));
+				this->game->window.draw(block);
+			}
+		}
+		//draw the piece
+		for (int block=0; block<4; block++) {
+			this->game->window.draw(this->game->piece.getBlock(block));
+		}
+		this->game->window.draw(this->game->hidden_rows);
+	}
 	 return;
 }
 
@@ -79,8 +102,7 @@ void GameStateMain::update(const float dt)
 				this->game->levelUp();
 			}
 			this->game->drawPanels();
-		}
-		
+		}		
 		this->game->updatePieces();
 		this->game->drawPreview();
 		
@@ -133,6 +155,10 @@ void GameStateMain::handleInput()
 					if(this->game->checkRight()) {
 						this->game->piece.moveRight();
 					}
+				}else if(event.key.code == sf::Keyboard::Up) {
+					if(this->game->checkDown()) {
+						this->game->dropPiece();
+					}
 				}else if(event.key.code == sf::Keyboard::Space) {
 					if(this->game->checkDown()) {
 						this->game->piece.rotateLeft();
@@ -170,10 +196,13 @@ void GameStateMain::handleInput()
 
 GameStateMain::GameStateMain(Game* game)
 {
+	log_info("Initialize GameStateMain");
 	this->game = game;
 	game->window.setTitle("Tetris");
 	sf::Vector2f pos = sf::Vector2f(game->window.getSize());
 	gameView.setSize(pos);
 	pos *= 0.5f;
 	gameView.setCenter(pos);
+	
+	this->initialize = true;
 }
